@@ -1,5 +1,5 @@
 [package]
-name = "chessrc"
+name = "bughouse-rc"
 version = "0.1.0"
 authors = ["cherrytoska <budanaz.yakup@gmail.com>"]
 edition = "2018"
