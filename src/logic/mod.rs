@@ -1,4 +1,4 @@
-mod board;
+pub mod board;
 use crate::logic::board::ChessBoard;
 use crate::logic::board::Piece;
 use std::cmp;

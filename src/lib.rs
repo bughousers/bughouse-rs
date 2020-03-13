@@ -2,6 +2,8 @@ mod logic;
 
 #[cfg(test)]
 mod tests {
+    use crate::logic::board::Piece;
+    use crate::logic::ChessLogic;
 
     #[test]
     fn test_trivial() {
