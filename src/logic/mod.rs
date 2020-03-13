@@ -176,6 +176,7 @@ impl ChessLogic {
              vec.append(&mut self.x_mov(board1,old_i,old_j));
              vec },
             Piece::N | Piece::n => self.horse_jump(board1,old_i,old_j),
+            Piece::K | Piece::k => self.king_move(board1,old_i,old_j),
              _ => Vec::new(),
         }
     }
@@ -560,7 +561,53 @@ impl ChessLogic {
                 }else if !self.check_for_piece(board1,Piece::E, ic,jc){
                     break;
                 }
-            
+            }
+            //check for horses
+            ic = i as i32;
+            jc = j as i32;
+            let a = [-2,2];
+            let b = [-1,-1];
+            for i_off in a.iter() {
+                for j_off in b.iter() {
+                    if self.valid(ic+i_off,jc+j_off)  {
+                        if board1 {
+                            if self.chess_board1.board[(ic+i_off) as usize][(jc+j_off) as usize] == Piece::n {
+                                return true
+                            }
+                        }else{
+                            if self.chess_board2.board[(ic+i_off) as usize][(jc+j_off) as usize] == Piece::n {
+                                return true
+                            }
+                        }
+                    }
+                }
+            }
+            for j_off in a.iter() {
+                for i_off in b.iter() {
+                    if self.valid(ic+i_off,jc+j_off)  {
+                        if board1 {
+                            if self.chess_board1.board[(ic+i_off) as usize][(jc+j_off) as usize] == Piece::n {
+                                return true
+                            }
+                        }else{
+                            if self.chess_board2.board[(ic+i_off) as usize][(jc+j_off) as usize] == Piece::n {
+                                return true
+                            }
+                        }
+                    }
+                }
+            }
+            //check for enemy king
+            let c = [-1,0,1];
+            let d = [-1,0,1];
+            for i_off in c.iter() {
+                for j_off in d.iter() {
+                    if self.valid(ic+i_off,jc+j_off) && !(*i_off==0 && *j_off==0) {
+                        if self.chess_board1.board[(ic+i_off) as usize][(jc+j_off) as usize] == Piece::k {
+                            return true
+                        }
+                    }
+                }
             }
    
         }
