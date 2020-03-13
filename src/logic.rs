@@ -8,13 +8,18 @@ pub struct ChessLogic {
     pub chess_board2: ChessBoard,
     //tuple of start point offset and if bool to indicate 
     //if it has moved
-    unmoved_black_pawns: [(usize,bool); 8],
-    unmoved_white_pawns: [(usize,bool); 8],
 }
 
 impl ChessLogic {
     pub fn print(&self){
         self.chess_board1.print_board();
+    }
+
+    pub fn testfoo(&mut self) {
+        self.chess_board1.board[5][4] = Piece::P;
+        self.chess_board1.board[5][5] = Piece::p;
+        self.chess_board1.board[4][2] = Piece::R;
+        self.chess_board1.board[4][3] = Piece::Q;
     }
 
     pub fn print_w_legal(&mut self,board1:bool,locs: &Vec<(usize,usize)>){
@@ -40,8 +45,6 @@ impl ChessLogic {
         ChessLogic{
             chess_board1: ChessBoard::new(),
             chess_board2: ChessBoard::new(),
-            unmoved_black_pawns: [(0,true); 8],
-            unmoved_white_pawns: [(0,true); 8],
         }
     }
     pub fn get_legal_moves(&self,board1:bool, old_i:usize, old_j:usize)
@@ -49,8 +52,9 @@ impl ChessLogic {
     {
         match self.chess_board1.board[old_i][old_j] {
             Piece::P => {
-                match self.unmoved_white_pawns[old_j] {
-                    (0,true) =>  {
+                match (old_i,old_j) {
+                    //unmoved (Double move)
+                    (6,_) =>  {
                         let mut vec = Vec::new();
                         if self.is_empty(board1,old_i-1,old_j) {
                             vec.push((old_i-1,old_j));
@@ -65,6 +69,31 @@ impl ChessLogic {
                             vec.push((old_i-1,old_j+1));
                         }
                         vec
+                    },
+                    //6th lane with en passant
+                    (3,_) => {
+                        let mut vec = Vec::new();
+                        if self.is_empty(board1,old_i-1,old_j) {
+                            vec.push((old_i-1,old_j));
+                        }
+                        if old_j > 0 && self.is_enemy(board1,true,old_i-1,old_j-1) {
+                            vec.push((old_i-1,old_j-1));
+                        }
+                        if old_j < 7 && self.is_enemy(board1,true,old_i-1,old_j+1) {
+                            vec.push((old_i-1,old_j+1));
+                        }
+                        //en passant
+                        if old_j > 0 && self.is_enemy(board1,true,old_i,old_j-1) 
+                        && self.get_piece(board1,old_i,old_j-1) == Piece::P {
+                            vec.push((old_i-1,old_j-1));
+                        }
+                        if old_j < 7 && self.is_enemy(board1,true,old_i,old_j+1)
+                        && self.get_piece(board1,old_i,old_j+1) == Piece::P {
+                            vec.push((old_i-1,old_j+1));
+                        }
+                        vec
+
+
                     },
                     (_,_) => {
                         let mut vec = Vec::new();
@@ -82,8 +111,8 @@ impl ChessLogic {
                 }
             },
             Piece::p => {
-                match self.unmoved_black_pawns[old_j] {
-                    (0,true) =>  {
+                match (old_i,old_j) {
+                    (1,_) =>  {
                         let mut vec = Vec::new();
                         if self.is_empty(board1,old_i+1,old_j) {
                             vec.push((old_i+1,old_j));
@@ -93,12 +122,36 @@ impl ChessLogic {
                         }
                        
                         if old_j > 0 && self.is_enemy(board1,false,old_i+1,old_j-1) {
-                            vec.push((old_i+1,old_j+1));
+                            vec.push((old_i+1,old_j-1));
                         }
                         if old_j < 7 && self.is_enemy(board1,false,old_i+1,old_j+1) {
-                            vec.push((old_i-1,old_j+1));
+                            vec.push((old_i+1,old_j+1));
                         }
                         vec
+                    },
+                    //4th line with enpassant 
+                    (5,_) => {
+                            let mut vec = Vec::new();
+                            if self.is_empty(board1,old_i+1,old_j) {
+                                vec.push((old_i+1,old_j));
+                            }
+                            if old_j > 0 && self.is_enemy(board1,true,old_i+1,old_j-1) {
+                                vec.push((old_i+1,old_j-1));
+                            }
+                            if old_j < 7 && self.is_enemy(board1,true,old_i+1,old_j+1) {
+                                vec.push((old_i+1,old_j+1));
+                            }
+                            //en passant
+                            if old_j > 0 && self.is_enemy(board1,false,old_i,old_j-1) 
+                            && self.get_piece(board1,old_i,old_j-1) == Piece::P {
+                                vec.push((old_i+1,old_j-1));
+                            }
+                            if old_j < 7 && self.is_enemy(board1,false,old_i,old_j+1)
+                            && self.get_piece(board1,old_i,old_j+1) == Piece::P {
+                                vec.push((old_i+1,old_j+1));
+                            }
+                            vec
+    
                     },
                     (_,_) => {
                         let mut vec = Vec::new();
@@ -115,9 +168,14 @@ impl ChessLogic {
                     },
                 }
             },
-            Piece::R => self.cross_mov(board1,old_i,old_j),
-            Piece::r => self.cross_mov(board1,old_i,old_j),
-            _ => Vec::new(),
+            Piece::R | Piece::r => self.cross_mov(board1,old_i,old_j),
+            Piece::B | Piece::b => self.x_mov(board1,old_i,old_j),
+            Piece::Q | Piece::q => 
+            { let mut vec = self.cross_mov(board1,old_i,old_j);
+             vec.append(&mut self.x_mov(board1,old_i,old_j));
+             vec },
+            Piece::N | Piece::n => self.horse_jump(board1,old_i,old_j),
+             _ => Vec::new(),
         }
     }
 
@@ -175,31 +233,27 @@ impl ChessLogic {
     fn horizontal_mov(&self,board1:bool, i:usize, j:usize) -> Vec<(usize,usize)> {
         let mut vec = Vec::new();
         let mut jc = j;
-        if jc < 7 {
-            jc+= 1;
-            while jc <= 7 && (self.is_empty(board1,i,jc) ||
-             self.is_enemy(board1,self.is_white(board1,i,j),i,jc)){
+        while jc > 0 {
+            jc -= 1;
+            if self.is_empty(board1,i,jc) {
                 vec.push((i,jc));
-                jc+= 1;
-
-                if self.is_enemy(board1,self.is_white(board1,i,j),i,jc-1) {
-                    jc = 8;
+            }else {
+                if self.is_enemy(board1,self.is_white(board1,i,j),i,jc) {
+                    vec.push((i,jc));
                 }
+                break;
             }
         }
-        if jc > 0 {
-            jc-= 1;
-            while jc > 0 && (self.is_empty(board1,i,jc) || 
-            self.is_enemy(board1,self.is_white(board1,i,j),i,jc)){
+        jc = j;
+        while jc < 7 {
+            jc += 1;
+            if self.is_empty(board1,i,jc) {
                 vec.push((i,jc));
-                jc-= 1;
-
-                if self.is_enemy(board1,self.is_white(board1,i,j),i,jc+1) {
-                    jc = 0;
+            }else {
+                if self.is_enemy(board1,self.is_white(board1,i,j),i,jc) {
+                    vec.push((i,jc));
                 }
-            }
-            if self.is_empty(board1,i,0) {
-                vec.push((i,0));
+                break;
             }
         }
         vec
@@ -208,30 +262,27 @@ impl ChessLogic {
     fn vertical_mov(&self,board1:bool, i:usize, j:usize)  -> Vec<(usize,usize)>{
         let mut vec = Vec::new();
         let mut ic = i;
-        if ic < 7 {
-            ic+= 1;
-            while ic <= 7 && (self.is_empty(board1,ic,j) || 
-            self.is_enemy(board1,self.is_white(board1,i,j),ic,j)) {
+        while ic > 0 {
+            ic -= 1;
+            if self.is_empty(board1,ic,j) {
                 vec.push((ic,j));
-                ic+= 1;
-                if self.is_enemy(board1,self.is_white(board1,i,j),ic-1,j) {
-                    ic = 8;
+            }else {
+                if self.is_enemy(board1,self.is_white(board1,i,j),ic,j) {
+                    vec.push((ic,j));
                 }
+                break;
             }
         }
-        if ic > 0 {
-            ic-= 1;
-            while ic > 0 && (self.is_empty(board1,ic,j) || 
-            self.is_enemy(board1,self.is_white(board1,i,j),ic,j)) {
+        ic = i;
+        while ic < 7 {
+            ic += 1;
+            if self.is_empty(board1,ic,j) {
                 vec.push((ic,j));
-                ic-= 1;
-
-                if self.is_enemy(board1,self.is_white(board1,i,j),ic+1,j) {
-                    ic = 0;
+            }else {
+                if self.is_enemy(board1,self.is_white(board1,i,j),i,j) {
+                    vec.push((ic,j));
                 }
-            }
-            if self.is_empty(board1,0,j) {
-                vec.push((0,j));
+                break;
             }
         }
         vec
@@ -243,7 +294,186 @@ impl ChessLogic {
         vec
     }
 
-    fn x_mov(&self, i:usize, j:usize)  -> Vec<(usize,usize)>{
-        Vec::new()
+    fn x_mov(&self,board1:bool, i:usize, j:usize)  -> Vec<(usize,usize)>{
+        let mut vec = Vec::new();
+        let mut ic = i;
+        let mut jc = j;
+
+        //lower right
+        while ic < 8 && jc < 8 {
+            ic+=1;
+            jc+=1;
+            if self.is_empty(board1,ic,jc) {
+                vec.push((ic,jc));
+            }else{
+                if self.is_enemy(board1,self.is_white(board1,i,j),ic,jc){
+                    vec.push((ic,jc));
+                }
+                break;
+            }
+        }
+        //upper right
+        ic=i;
+        jc=j;
+        while ic > 0 && jc < 8 {
+            ic-=1;
+            jc+=1;
+            if self.is_empty(board1,ic,jc) {
+                vec.push((ic,jc));
+            }else{
+                if self.is_enemy(board1,self.is_white(board1,i,j),ic,jc){
+                    vec.push((ic,jc));
+                }
+                break;
+            }
+        }
+        //upper left 
+        ic=i;
+        jc=j;
+        while ic > 0 && jc > 0 {
+            ic-=1;
+            jc-=1;
+            if self.is_empty(board1,ic,jc) {
+                vec.push((ic,jc));
+            }else{
+                if self.is_enemy(board1,self.is_white(board1,i,j),ic,jc){
+                    vec.push((ic,jc));
+                }
+                break;
+            }
+        }
+        //lower left
+        ic=i;
+        jc=j;
+        while ic > 0 && jc > 0 {
+            ic+=1;
+            jc-=1;
+            if self.is_empty(board1,ic,jc) {
+                vec.push((ic,jc));
+            }else{
+                if self.is_enemy(board1,self.is_white(board1,i,j),ic,jc){
+                    vec.push((ic,jc));
+                }
+                break;
+            }
+        }
+        vec
     }
+
+    fn horse_jump(&self, board1:bool, i:usize, j:usize) -> Vec<(usize,usize)> {
+        //all possible combinations of +2, -2, +1, -1 for each square
+        let twoway = [-2,2];
+        let oneway = [1,-1];
+        let mut vec = Vec::new();
+
+        for i_off in twoway.iter() {
+            for j_off in oneway.iter() {
+                let mut i_signed = i as i32;
+                let mut j_signed = j as i32;
+                i_signed += i_off;
+                j_signed += j_off;
+                if i_signed >= 0 && i_signed <= 7 &&
+                j_signed >= 0 && j_signed <= 7 {
+                    let itmp = i_signed as usize;
+                    let jtmp = j_signed as usize;
+                    if self.is_empty(board1,itmp,jtmp) || 
+                    self.is_enemy(board1,self.is_white(board1,i,j),itmp,jtmp) {
+                        vec.push((itmp,jtmp));
+                    }
+                   
+                }
+            }
+        }
+        for i_off in oneway.iter() {
+            for j_off in twoway.iter() {
+                let mut i_signed = i as i32;
+                let mut j_signed = j as i32;
+                i_signed += i_off;
+                j_signed += j_off;
+                if i_signed >= 0 && i_signed <= 7 &&
+                j_signed >= 0 && j_signed <= 7 {
+                    let itmp = i_signed as usize;
+                    let jtmp = j_signed as usize;
+                    if self.is_empty(board1,itmp,jtmp) || 
+                    self.is_enemy(board1,self.is_white(board1,i,j),itmp,jtmp) {
+                        vec.push((itmp,jtmp));
+                    }
+                }
+            }
+        }
+        vec
+    }
+
+    pub fn get_piece(&self, chessboard1:bool, i:usize, j:usize) -> Piece {
+        match chessboard1 {
+            true => self.chess_board1.board[i][j],
+            false => self.chess_board2.board[i][j],
+        }
+    }
+
+    //iswhite <=> the unit on the square is white
+    pub fn is_attacked(&self, board1:bool, iswhite:bool, i:usize,j:usize) -> bool {
+        //check for pawns
+
+        //check for rook|queen on vertical
+
+        //check for rook|queen on horizontal
+
+        //check for bishop on x
+
+        //check for horses
+
+        //check for enemy king 
+
+        let mut ic = (i as i32)-1;
+        let mut jc = (j as i32)-1;
+        if iswhite{
+            //check for pawns
+            if self.valid(ic,jc) {
+                println!("xx");
+                let a = ic as usize;
+                let b = jc as usize;
+                if board1 {
+                    if self.chess_board1.board[a][b]==Piece::p
+                    && self.is_enemy(true, true, a,b){
+                        return true
+                    }
+                }else{
+                    if self.chess_board2.board[a][b]==Piece::p
+                    && self.is_enemy(false, true, a,b){
+                        return true
+                    }
+                } 
+            }
+            jc += 2;
+            if self.valid(ic,jc) {
+                let a = ic as usize;
+                let b = jc as usize;
+                if board1 {
+                    if self.chess_board1.board[a][b]==Piece::p
+                    && self.is_enemy(true, true, a,b){
+                        return true
+                    }
+                }else{
+                    if self.chess_board2.board[a][b]==Piece::p
+                    && self.is_enemy(false, true, a,b){
+                        return true
+                    }
+                } 
+            }
+            //check for horizontal line
+            
+        }
+        false
+    }
+
+    fn valid(&self, a: i32, b: i32) -> bool {
+        if a >= 0 && a <= 7 && b >= 0 && b<= 7 {
+            return true
+        }else {
+            return false
+        }
+    }
+
+
 }
