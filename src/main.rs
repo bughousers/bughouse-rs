@@ -21,4 +21,6 @@ fn main() {
     chess_logic.print_w_legal(true,&chess_logic.get_legal_moves(true,0,1));
     chess_logic.print_w_legal(true,&chess_logic.get_legal_moves(true,7,1));
     println!("{}",chess_logic.is_attacked(true,true,6,6));
+    println!("{}",chess_logic.is_attacked(true,true,7,7));
+    println!("{}",chess_logic.is_attacked(true,true,3,4));
 }

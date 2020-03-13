@@ -19,7 +19,8 @@ impl ChessLogic {
         self.chess_board1.board[5][4] = Piece::P;
         self.chess_board1.board[5][5] = Piece::p;
         self.chess_board1.board[4][2] = Piece::R;
-        self.chess_board1.board[4][3] = Piece::Q;
+        self.chess_board1.board[4][3] = Piece::q;
+        self.chess_board1.board[1][7] = Piece::E;
     }
 
     pub fn print_w_legal(&mut self,board1:bool,locs: &Vec<(usize,usize)>){
@@ -345,7 +346,7 @@ impl ChessLogic {
         //lower left
         ic=i;
         jc=j;
-        while ic > 0 && jc > 0 {
+        while ic < 8 && jc > 0 {
             ic+=1;
             jc-=1;
             if self.is_empty(board1,ic,jc) {
@@ -430,7 +431,6 @@ impl ChessLogic {
         if iswhite{
             //check for pawns
             if self.valid(ic,jc) {
-                println!("xx");
                 let a = ic as usize;
                 let b = jc as usize;
                 if board1 {
@@ -462,7 +462,107 @@ impl ChessLogic {
                 } 
             }
             //check for horizontal line
+            jc = j as i32;
+            ic = i as i32;
+            let mut jx = jc+1;
+            while jx < 8 {
+                if self.check_for_piece(board1,Piece::r,ic,jx) || 
+                self.check_for_piece(board1,Piece::q,ic,jx) {
+                    return true
+                }else if !self.check_for_piece(board1,Piece::E, ic,jx){
+                    break;
+                }
+                jx+=1;
+            }
+            jx = jc-1;
+            while jx >= 0{
+                if self.check_for_piece(board1,Piece::r,ic,jx) || 
+                self.check_for_piece(board1,Piece::q,ic,jx) {
+                    return true
+                }else if !self.check_for_piece(board1,Piece::E, ic,jx){
+                    break;
+                }
+                jx -=1;
+            }
+            //check for vertical
+            let mut ix = ic+1;
+            while ix <8 {
+                if self.check_for_piece(board1,Piece::r,ix,jc) || 
+                self.check_for_piece(board1,Piece::q,ix,jc) {
+                    return true
+                }else if !self.check_for_piece(board1,Piece::E, ix,jc){
+                    break;
+                }
+                ix+=1;
+            }
+            ix = ic-1;
+            while ix >=0 {
+                if self.check_for_piece(board1,Piece::r,ix,jc) || 
+                self.check_for_piece(board1,Piece::q,ix,jc) {
+                    return true
+                }else if !self.check_for_piece(board1,Piece::E, ix,jc){
+                    break;
+                }
+                ix-=1;
+            }
+            //check for capraz
+            ic=i as i32;
+            jc=j as i32;
+            //lower right
+            while ic < 7 && jc < 7 {
+                ic+=1;
+                jc+=1;
+                if self.check_for_piece(board1,Piece::q,ic,jc) ||
+                self.check_for_piece(board1,Piece::b,ic,jc) {
+                    return true
+                }else if !self.check_for_piece(board1,Piece::E, ic,jc){
+                    break;
+                }
+                
+            }
+            //upper right
+            ic=i as i32;
+            jc=j as i32;
+            while ic > 0 && jc < 7 {
+                ic-=1;
+                jc+=1;
+                if self.check_for_piece(board1,Piece::q,ic,jc) ||
+                self.check_for_piece(board1,Piece::b,ic,jc) {
+                    return true
+                }else if !self.check_for_piece(board1,Piece::E, ic,jc){
+                    break;
+                }
+                
+            }
+            //upper left 
+            ic=i as i32;
+            jc=j as i32;
+            while ic > 0 && jc > 0 {
+                ic-=1;
+                jc-=1;
+                if self.check_for_piece(board1,Piece::q,ic,jc) ||
+                self.check_for_piece(board1,Piece::b,ic,jc) {
+                    return true
+                }else if !self.check_for_piece(board1,Piece::E, ic,jc){
+                    break;
+                }
+                
+            }
+            //lower left
+            ic=i as i32;
+            jc=j as i32;
+            while ic < 7 && jc > 0 {
+                ic+=1;
+                jc-=1;
+                if self.check_for_piece(board1,Piece::q,ic,jc) ||
+                self.check_for_piece(board1,Piece::b,ic,jc) {
+                    return true
+                }else if !self.check_for_piece(board1,Piece::E, ic,jc){
+                    break;
+                }
             
+            }
+   
         }
         false
     }
@@ -475,5 +575,47 @@ impl ChessLogic {
         }
     }
 
+    fn check_for_piece(&self,board1:bool, piece:Piece, i : i32, j:i32) -> bool {
+        if board1 {
+            if self.chess_board1.board[i as usize][j as usize]==piece
+            {
+                return true
+            }else {
+                return false
+            }
+        }else{
+            if self.chess_board2.board[i as usize][j as usize]==piece
+            {
+                return true 
+            }else {
+                return false
+            }
+        }
+
+    }
+
+    pub fn all_empty(&mut self,board1:bool) {
+        for i in 0..8 {
+            for j in 0..8 {
+                if board1{
+                    self.chess_board1.board[i][j] = Piece::E;
+                }else{
+                    self.chess_board2.board[i][j] = Piece::E;
+                }
+                
+            }
+        }
+    }
+
+    pub fn set_piece(&mut self,board1:bool,piece:Piece,i:usize,j:usize){
+        if board1{
+            self.chess_board1.board[i][j] = piece;
+        }else{
+            self.chess_board2.board[i][j] = piece;
+        }
+    }
+
+
 
 }
+
