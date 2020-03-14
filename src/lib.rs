@@ -41,7 +41,7 @@ mod tests {
         cl.all_empty(true);
         cl.set_piece(true,Piece::q,5,0);
         cl.set_piece(true,Piece::k,3,0);
-        cl.set_piece(true,Piece::r,4,0);
+        cl.set_piece(true,Piece::Ur,4,0);
         cl.set_piece(true,Piece::b,4,1);
 
         assert_eq!(
@@ -49,7 +49,7 @@ mod tests {
         );
 
         cl.all_empty(true);
-        cl.set_piece(true,Piece::Q,5,0);
+        cl.set_piece(true,Piece::UQ,5,0);
         cl.set_piece(true,Piece::K,3,0);
         cl.set_piece(true,Piece::r,4,0);
         cl.set_piece(true,Piece::B,4,1);
@@ -138,7 +138,7 @@ mod tests {
         cl.chess_board1.board[6][5]=Piece::E;
         cl.chess_board1.board[4][6]=Piece::P;
         cl.chess_board1.board[5][5]=Piece::P;
-        cl.chess_board1.board[4][7]=Piece::q;
+        cl.chess_board1.board[4][7]=Piece::Uq;
 
         let vec = cl.get_legal_moves(true,7,4);
         cl.print_w_legal(true,&vec);
@@ -235,7 +235,7 @@ mod tests {
         let mut cl = ChessLogic::new();
         cl.all_empty(true);
         cl.set_piece(true,Piece::Q,0,0);
-        cl.set_piece(true,Piece::q,7,7);
+        cl.set_piece(true,Piece::Uq,7,7);
         let mut vec_queen = cl.get_legal_moves(true,7,7);
         let mut vecbyhand_queen = Vec::new();
 
@@ -389,17 +389,18 @@ mod tests {
         cl.all_empty(true);
         cl.set_piece(true,Piece::k,1,7);
         cl.set_piece(true,Piece::K,1,5);
-        cl.set_piece(true,Piece::B,0,5);
+        cl.set_piece(true,Piece::UB,0,5);
         cl.set_piece(true,Piece::N,3,4);
 
         let vec = cl.get_legal_moves(true,1,7);
+        cl.print_w_legal(true,&vec);
         assert_eq!(vec,[(0,7)]);
 
         let mut cl = ChessLogic::new();
         cl.all_empty(true);
         cl.set_piece(true,Piece::k,0,0);
         cl.set_piece(true,Piece::K,2,1);
-        cl.set_piece(true,Piece::B,2,2);
+        cl.set_piece(true,Piece::UB,2,2);
         cl.set_piece(true,Piece::N,2,0);
 
         let vec = cl.get_legal_moves(true,0,0);

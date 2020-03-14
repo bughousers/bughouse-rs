@@ -54,7 +54,7 @@ impl ChessLogic {
     -> Vec<(usize,usize)>
     {
         match self.chess_board1.board[old_i][old_j] {
-            Piece::P => {
+            Piece::P  => {
                 match (old_i,old_j) {
                     //unmoved (Double move)
                     (6,_) =>  {
@@ -119,7 +119,7 @@ impl ChessLogic {
                     },
                 }
             },
-            Piece::p => {
+            Piece::p  => {
                 match (old_i,old_j) {
                     (1,_) =>  {
                         let mut vec = Vec::new();
@@ -183,13 +183,13 @@ impl ChessLogic {
                     },
                 }
             },
-            Piece::R | Piece::r => self.cross_mov(board1,old_i,old_j),
-            Piece::B | Piece::b => self.x_mov(board1,old_i,old_j),
-            Piece::Q | Piece::q => 
+            Piece::R | Piece::r | Piece::Ur | Piece::UR => self.cross_mov(board1,old_i,old_j),
+            Piece::B | Piece::b | Piece::UB | Piece::Ub=> self.x_mov(board1,old_i,old_j),
+            Piece::Q | Piece::q | Piece::UQ | Piece::Uq=> 
             { let mut vec = self.cross_mov(board1,old_i,old_j);
              vec.append(&mut self.x_mov(board1,old_i,old_j));
              vec },
-            Piece::N | Piece::n => self.horse_jump(board1,old_i,old_j),
+            Piece::N | Piece::n |Piece::UN | Piece::Un=> self.horse_jump(board1,old_i,old_j),
             Piece::K | Piece::k => self.king_move(board1,old_i,old_j),
              _ => Vec::new(),
         }
@@ -207,11 +207,11 @@ impl ChessLogic {
             match self.chess_board1.board[i][j] {
                 Piece::E => false,
                 Piece::L => false,
-                Piece::P => false,
-                Piece::R => false,
-                Piece::N => false,
-                Piece::B => false,
-                Piece::Q => false,
+                Piece::P  => false,
+                Piece::R | Piece::UR => false,
+                Piece::N | Piece::UN => false,
+                Piece::B | Piece::UB => false,
+                Piece::Q | Piece::UQ => false,
                 Piece::K => false,
                 _ => true,
 
@@ -220,11 +220,11 @@ impl ChessLogic {
             match self.chess_board1.board[i][j] {
                 Piece::E => false,
                 Piece::L => false,
-                Piece::p => false,
-                Piece::r => false,
-                Piece::n => false,
-                Piece::b => false,
-                Piece::q => false,
+                Piece::p  => false,
+                Piece::r | Piece::Ur => false,
+                Piece::n | Piece::Un => false,
+                Piece::b | Piece::Ub => false,
+                Piece::q | Piece::Uq => false,
                 Piece::k => false,
                 _ => true,
 
@@ -236,12 +236,12 @@ impl ChessLogic {
         match self.chess_board1.board[i][j] {
             Piece::E => false,
             Piece::L => false,
-            Piece::p => false,
-            Piece::r => false,
-            Piece::n => false,
-            Piece::b => false,
-            Piece::q => false,
-            Piece::k => false,
+            Piece::p  => false,
+            Piece::r | Piece::Ur => false,
+            Piece::n | Piece::Un => false,
+            Piece::b | Piece::Ub => false,
+            Piece::q | Piece::Uq => false,
+            Piece::k  => false,
             _ => true,
         }
     }
@@ -430,11 +430,25 @@ impl ChessLogic {
     pub fn get_piece_w_en(&self, iswhite:bool, piece:Piece) -> Piece {
         match piece {
             Piece::p | Piece::P => if iswhite {Piece::p} else {Piece::P} ,
-            Piece::r | Piece::R => if iswhite {Piece::r} else {Piece::R} ,
-            Piece::b | Piece::B => if iswhite {Piece::b} else {Piece::B} ,
+            Piece::r | Piece::R | Piece::Ur | Piece::UR => if iswhite {Piece::r} else {Piece::R} ,
+            Piece::b | Piece::B | Piece::UB | Piece::Ub => if iswhite {Piece::b} else {Piece::B} ,
             Piece::k | Piece::K => if iswhite {Piece::k} else {Piece::K} ,
-            Piece::q | Piece::Q => if iswhite {Piece::q} else {Piece::Q} ,
-            Piece::n | Piece::N => if iswhite {Piece::n} else {Piece::N} ,
+            Piece::q | Piece::Q | Piece::Uq | Piece::UQ => if iswhite {Piece::q} else {Piece::Q} ,
+            Piece::n | Piece::N | Piece::Un | Piece::UN => if iswhite {Piece::n} else {Piece::N} ,
+            Piece::L => Piece::L,
+            Piece::E => Piece::E,
+
+        }
+    }
+
+    pub fn get_piece_w_upgrade_en(&self, iswhite:bool, piece:Piece) -> Piece {
+        match piece {
+            Piece::p | Piece::P => if iswhite {Piece::p} else {Piece::P} ,
+            Piece::r | Piece::R | Piece::Ur | Piece::UR => if iswhite {Piece::Ur} else {Piece::UR} ,
+            Piece::b | Piece::B | Piece::UB | Piece::Ub => if iswhite {Piece::Ub} else {Piece::UB} ,
+            Piece::k | Piece::K => if iswhite {Piece::k} else {Piece::K} ,
+            Piece::q | Piece::Q | Piece::Uq | Piece::UQ => if iswhite {Piece::Uq} else {Piece::UQ} ,
+            Piece::n | Piece::N | Piece::Un | Piece::UN => if iswhite {Piece::Un} else {Piece::UN} ,
             Piece::L => Piece::L,
             Piece::E => Piece::E,
 
@@ -542,7 +556,9 @@ impl ChessLogic {
             let mut jx = jc+1;
             while jx < 8 {
                 if self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::r),ic,jx) || 
-                self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::q),ic,jx) {
+                self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::q),ic,jx) ||
+                self.check_for_piece(board1,self.get_piece_w_upgrade_en(iswhite,Piece::r),ic,jx) || 
+                self.check_for_piece(board1,self.get_piece_w_upgrade_en(iswhite,Piece::q),ic,jx){
 
                     return true
                 }else if !self.check_for_piece(board1,Piece::E, ic,jx){
@@ -553,7 +569,9 @@ impl ChessLogic {
             jx = jc-1;
             while jx >= 0{
                 if self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::r),ic,jx) || 
-                self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::q),ic,jx) {
+                self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::q),ic,jx) ||
+                self.check_for_piece(board1,self.get_piece_w_upgrade_en(iswhite,Piece::r),ic,jx) || 
+                self.check_for_piece(board1,self.get_piece_w_upgrade_en(iswhite,Piece::q),ic,jx) {
                     return true
                 }else if !self.check_for_piece(board1,Piece::E, ic,jx){
                     break;
@@ -564,7 +582,10 @@ impl ChessLogic {
             let mut ix = ic+1;
             while ix <8 {
                 if self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::r),ix,jc) || 
-                self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::q),ix,jc) {
+                self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::q),ix,jc) ||
+                self.check_for_piece(board1,self.get_piece_w_upgrade_en(iswhite,Piece::r),ix,jc) || 
+                self.check_for_piece(board1,self.get_piece_w_upgrade_en(iswhite,Piece::q),ix,jc)
+             {
                     return true
                 }else if !self.check_for_piece(board1,Piece::E, ix,jc){
                     break;
@@ -574,7 +595,10 @@ impl ChessLogic {
             ix = ic-1;
             while ix >=0 {
                 if self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::r),ix,jc) || 
-                self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::q),ix,jc) {
+                self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::q),ix,jc) ||
+                self.check_for_piece(board1,self.get_piece_w_upgrade_en(iswhite,Piece::r),ix,jc) || 
+                self.check_for_piece(board1,self.get_piece_w_upgrade_en(iswhite,Piece::q),ix,jc)
+                {
                     return true
                 }else if !self.check_for_piece(board1,Piece::E, ix,jc){
                     break;
@@ -589,7 +613,9 @@ impl ChessLogic {
                 ic+=1;
                 jc+=1;
                 if self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::q),ic,jc) ||
-                self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::b),ic,jc) {
+                self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::b),ic,jc) ||
+                self.check_for_piece(board1,self.get_piece_w_upgrade_en(iswhite,Piece::q),ic,jc) ||
+                self.check_for_piece(board1,self.get_piece_w_upgrade_en(iswhite,Piece::b),ic,jc) {
             
                     return true
                 }else if !self.check_for_piece(board1,Piece::E, ic,jc){
@@ -604,7 +630,9 @@ impl ChessLogic {
                 ic-=1;
                 jc+=1;
                 if self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::q),ic,jc) ||
-                self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::b),ic,jc) {
+                self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::b),ic,jc) ||
+                self.check_for_piece(board1,self.get_piece_w_upgrade_en(iswhite,Piece::q),ic,jc) ||
+                self.check_for_piece(board1,self.get_piece_w_upgrade_en(iswhite,Piece::b),ic,jc){
               
                     return true
                 }else if !self.check_for_piece(board1,Piece::E, ic,jc){
@@ -619,7 +647,9 @@ impl ChessLogic {
                 ic-=1;
                 jc-=1;
                 if self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::q),ic,jc) ||
-                self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::b),ic,jc) {
+                self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::b),ic,jc) ||
+                self.check_for_piece(board1,self.get_piece_w_upgrade_en(iswhite,Piece::q),ic,jc) ||
+                self.check_for_piece(board1,self.get_piece_w_upgrade_en(iswhite,Piece::b),ic,jc){
                  
                     return true
                 }else if !self.check_for_piece(board1,Piece::E, ic,jc){
@@ -634,7 +664,9 @@ impl ChessLogic {
                 ic+=1;
                 jc-=1;
                 if self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::q),ic,jc) ||
-                self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::b),ic,jc) {
+                self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::b),ic,jc) ||
+                self.check_for_piece(board1,self.get_piece_w_upgrade_en(iswhite,Piece::q),ic,jc) ||
+                self.check_for_piece(board1,self.get_piece_w_upgrade_en(iswhite,Piece::b),ic,jc) {
               
                     return true
                 }else if !self.check_for_piece(board1,Piece::E, ic,jc){
@@ -651,13 +683,17 @@ impl ChessLogic {
                     if self.valid(ic+i_off,jc+j_off)  {
                         if board1 {
                             if self.chess_board1.board[(ic+i_off) as usize][(jc+j_off) as usize] == 
-                            self.get_piece_w_en(iswhite,Piece::n) {
+                            self.get_piece_w_en(iswhite,Piece::n) ||
+                            self.chess_board1.board[(ic+i_off) as usize][(jc+j_off) as usize] == 
+                            self.get_piece_w_upgrade_en(iswhite,Piece::n){
                               
                                 return true
                             }
                         }else{
                             if self.chess_board2.board[(ic+i_off) as usize][(jc+j_off) as usize] == 
-                            self.get_piece_w_en(iswhite,Piece::n){
+                            self.get_piece_w_en(iswhite,Piece::n) ||
+                            self.chess_board1.board[(ic+i_off) as usize][(jc+j_off) as usize] == 
+                            self.get_piece_w_upgrade_en(iswhite,Piece::n){
                            
                                 return true
                             }
@@ -670,13 +706,17 @@ impl ChessLogic {
                     if self.valid(ic+i_off,jc+j_off)  {
                         if board1 {
                             if self.chess_board1.board[(ic+i_off) as usize][(jc+j_off) as usize] == 
-                            self.get_piece_w_en(iswhite,Piece::n) {
+                            self.get_piece_w_en(iswhite,Piece::n) || 
+                            self.chess_board1.board[(ic+i_off) as usize][(jc+j_off) as usize] == 
+                            self.get_piece_w_upgrade_en(iswhite,Piece::n){
                                
                                 return true
                             }
                         }else{
                             if self.chess_board2.board[(ic+i_off) as usize][(jc+j_off) as usize] == 
-                            self.get_piece_w_en(iswhite,Piece::n) {
+                            self.get_piece_w_en(iswhite,Piece::n) ||
+                            self.chess_board2.board[(ic+i_off) as usize][(jc+j_off) as usize] == 
+                            self.get_piece_w_upgrade_en(iswhite,Piece::n) {
                               
                                 return true
                             }
@@ -811,6 +851,21 @@ impl ChessLogic {
                 }
                 return false
             },
+        }
+    }
+
+    pub fn movemaker(&mut self, board1:bool, i_old:usize,j_old:usize,i:usize,j:usize) -> bool{
+        if self.legality_check(board1,i_old,j_old,i,j) {
+            if board1 {
+                //self.chess_board1.board[i_old][j_old] = 
+                true
+            }else{
+
+                true
+            }
+        }else{
+            println!("Move not legal!");
+            false
         }
     }
 

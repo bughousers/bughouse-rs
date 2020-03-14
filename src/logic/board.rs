@@ -4,25 +4,38 @@ use std::fmt;
 pub enum Piece {
     P,R,N,B,Q,K,E,L,
     p,r,n,b,q,k,
+    UR,UN,UB,UQ,
+    Ur,Un,Ub,Uq,
 }
 
 impl fmt::Display for Piece {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Piece::P => write!(f, "P"),
+            Piece::p => write!(f, "p"),
+
             Piece::R => write!(f, "R"),
             Piece::N => write!(f, "N"),
             Piece::B => write!(f, "B"),
             Piece::Q => write!(f, "Q"),
             Piece::K => write!(f, "K"),
             Piece::E => write!(f, " "),
-            Piece::p => write!(f, "p"),
+            Piece::L => write!(f, "L"), 
+            
             Piece::r => write!(f, "r"),
             Piece::n => write!(f, "n"),
             Piece::b => write!(f, "b"),
             Piece::q => write!(f, "q"),
             Piece::k => write!(f, "k"),
-            Piece::L => write!(f, "L"),
+   
+            Piece::UR => write!(f, "R"),
+            Piece::UN => write!(f, "N"),
+            Piece::UB => write!(f, "B"),
+            Piece::UQ => write!(f, "Q"),
+            Piece::Ur => write!(f, "r"),
+            Piece::Un => write!(f, "n"),
+            Piece::Ub => write!(f, "b"),
+            Piece::Uq => write!(f, "q"),
             //_ => write!(f, "shouldn't happen")
         }
     }
