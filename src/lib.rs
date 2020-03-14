@@ -270,8 +270,140 @@ mod tests {
         vecbyhand_norm.sort();
         
         assert_eq!(vec_norm,vecbyhand_norm);
+    }
 
+    #[test]
+    fn cool_checkmate1(){
+        let mut cl = ChessLogic::new();
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::k,2,4);
+        cl.set_piece(true,Piece::Q,3,2);
+        cl.set_piece(true,Piece::P,2,2);
+        cl.set_piece(true,Piece::K,4,5);
+        cl.set_piece(true,Piece::n,0,0);
+        cl.set_piece(true,Piece::R,0,5);
 
+        let mut vec= cl.get_legal_moves(true,2,4);
+        let mut vecbyhand = Vec::new();
+        cl.print_w_legal(true,&vec);
+        assert_eq!(vec,vecbyhand);
+    }
+
+    #[test]
+    fn pawn_attacks(){
+        let mut cl = ChessLogic::new();
+        let vec = cl.get_legal_moves(true,6,7);
+        cl.print_w_legal(true,&vec);
+        assert_eq!(false,cl.is_attacked(true,true,5,7));
+        assert_eq!(false,cl.is_attacked(true,true,5,6));
+        assert_eq!(false,cl.is_attacked(true,true,5,0));
+
+        assert_eq!(true,cl.is_attacked(true,false,5,7));
+        assert_eq!(true,cl.is_attacked(true,false,5,6));
+        assert_eq!(true,cl.is_attacked(true,false,5,0));
+
+        assert_eq!(true,cl.is_attacked(true,true,2,1));
+        assert_eq!(true,cl.is_attacked(true,true,2,0));
+        assert_eq!(true,cl.is_attacked(true,true,2,7));
+        assert_eq!(true,cl.is_attacked(true,true,2,3));
+
+        assert_eq!(false,cl.is_attacked(true,true,4,0));
+        assert_eq!(false,cl.is_attacked(true,true,4,7));
+        assert_eq!(false,cl.is_attacked(true,true,3,7));
+        assert_eq!(false,cl.is_attacked(true,true,3,0));
+        assert_eq!(false,cl.is_attacked(true,true,3,4));
+    }
+
+    #[test]
+    fn enpassant(){
+        let mut cl = ChessLogic::new();
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::p,4,0);
+        cl.set_piece(true,Piece::P,4,1);
+        cl.pawn_in_last_turn = Some((4,1));
+        let mut vec = cl.get_legal_moves(true,4,0);
+
+        let mut vecbyhand = Vec::new();
+        vecbyhand.push((5,0));
+        vecbyhand.push((5,1));
+        assert_eq!(vec,vecbyhand);
+
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::p,4,7);
+        cl.set_piece(true,Piece::P,4,6);
+        cl.pawn_in_last_turn = Some((4,6));
+        vec = cl.get_legal_moves(true,4,7);
+
+        vecbyhand = Vec::new();
+        vecbyhand.push((5,7));
+        vecbyhand.push((5,6));
+        assert_eq!(vec,vecbyhand);      
+        
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::p,4,6);
+        cl.set_piece(true,Piece::P,4,7);
+        cl.pawn_in_last_turn = Some((4,7));
+        vec = cl.get_legal_moves(true,4,6);
+
+        vecbyhand = Vec::new();
+        vecbyhand.push((5,6));
+        vecbyhand.push((5,7));
+        assert_eq!(vec,vecbyhand);
+
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::p,3,6);
+        cl.set_piece(true,Piece::P,3,7);
+        cl.pawn_in_last_turn = Some((3,6));
+        vec = cl.get_legal_moves(true,3,7);
+
+        vecbyhand = Vec::new();
+        vecbyhand.push((2,7));
+        vecbyhand.push((2,6));
+        assert_eq!(vec,vecbyhand);
+
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::p,3,0);
+        cl.set_piece(true,Piece::P,3,1);
+        cl.pawn_in_last_turn = Some((3,0));
+        vec = cl.get_legal_moves(true,3,1);
+
+        vecbyhand = Vec::new();
+        vecbyhand.push((2,1));
+        vecbyhand.push((2,0));
+        assert_eq!(vec,vecbyhand);
+
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::p,3,0);
+        cl.set_piece(true,Piece::P,3,1);
+        cl.pawn_in_last_turn = None;
+        vec = cl.get_legal_moves(true,3,1);
+
+        vecbyhand = Vec::new();
+        vecbyhand.push((2,1));
+        assert_eq!(vec,vecbyhand);
+    }
+
+    #[test]
+    fn horse_bishop_checkmate(){
+        let mut cl = ChessLogic::new();
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::k,1,7);
+        cl.set_piece(true,Piece::K,1,5);
+        cl.set_piece(true,Piece::B,0,5);
+        cl.set_piece(true,Piece::N,3,4);
+
+        let vec = cl.get_legal_moves(true,1,7);
+        assert_eq!(vec,[(0,7)]);
+
+        let mut cl = ChessLogic::new();
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::k,0,0);
+        cl.set_piece(true,Piece::K,2,1);
+        cl.set_piece(true,Piece::B,2,2);
+        cl.set_piece(true,Piece::N,2,0);
+
+        let vec = cl.get_legal_moves(true,0,0);
+        assert_eq!(vec,[]);
     }
 
 }
