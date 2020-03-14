@@ -8,6 +8,7 @@ pub struct ChessLogic {
     pub chess_board2: ChessBoard,
     //tuple of start point offset and if bool to indicate 
     //if it has moved
+    pub pawn_in_last_turn: Option<(usize,usize)>,
 }
 
 impl ChessLogic {
@@ -46,6 +47,7 @@ impl ChessLogic {
         ChessLogic{
             chess_board1: ChessBoard::new(),
             chess_board2: ChessBoard::new(),
+            pawn_in_last_turn: None,
         }
     }
     pub fn get_legal_moves(&mut self,board1:bool, old_i:usize, old_j:usize)
@@ -84,13 +86,19 @@ impl ChessLogic {
                             vec.push((old_i-1,old_j+1));
                         }
                         //en passant
-                        if old_j > 0 && self.is_enemy(board1,true,old_i,old_j-1) 
-                        && self.get_piece(board1,old_i,old_j-1) == Piece::P {
-                            vec.push((old_i-1,old_j-1));
+                        if old_j > 0 
+                        && self.get_piece(board1,old_i,old_j-1) == Piece::p {
+                            match self.pawn_in_last_turn {
+                                Some((a,b)) => vec.push((a-1,b)),
+                                _ => {},
+                            }
                         }
-                        if old_j < 7 && self.is_enemy(board1,true,old_i,old_j+1)
-                        && self.get_piece(board1,old_i,old_j+1) == Piece::P {
-                            vec.push((old_i-1,old_j+1));
+                        if old_j < 7 
+                        && self.get_piece(board1,old_i,old_j+1) == Piece::p {
+                            match self.pawn_in_last_turn {
+                                Some((a,b)) => vec.push((a-1,b)),
+                                _ => {},
+                            }
                         }
                         vec
 
@@ -131,7 +139,7 @@ impl ChessLogic {
                         vec
                     },
                     //4th line with enpassant 
-                    (5,_) => {
+                    (4,_) => {
                             let mut vec = Vec::new();
                             if self.is_empty(board1,old_i+1,old_j) {
                                 vec.push((old_i+1,old_j));
@@ -143,13 +151,19 @@ impl ChessLogic {
                                 vec.push((old_i+1,old_j+1));
                             }
                             //en passant
-                            if old_j > 0 && self.is_enemy(board1,false,old_i,old_j-1) 
+                            if old_j > 0 
                             && self.get_piece(board1,old_i,old_j-1) == Piece::P {
-                                vec.push((old_i+1,old_j-1));
+                                match self.pawn_in_last_turn {
+                                    Some((a,b)) => vec.push((a+1,b)),
+                                    _ => {},
+                                }
                             }
-                            if old_j < 7 && self.is_enemy(board1,false,old_i,old_j+1)
+                            if old_j < 7 
                             && self.get_piece(board1,old_i,old_j+1) == Piece::P {
-                                vec.push((old_i+1,old_j+1));
+                                match self.pawn_in_last_turn {
+                                    Some((a,b)) => vec.push((a+1,b)),
+                                    _ => {},
+                                }
                             }
                             vec
     
@@ -445,44 +459,83 @@ impl ChessLogic {
 
         //check for enemy king 
 
-        let mut ic = (i as i32)-1;
-        let mut jc = (j as i32)-1;
+        let mut ic = (i as i32);
+        let mut jc = (j as i32);
             //check for pawns
-            if self.valid(ic,jc) {
-                let a = ic as usize;
-                let b = jc as usize;
-                if board1 {
-                    if self.chess_board1.board[a][b]==self.get_piece_w_en(iswhite,Piece::p)
-                    && self.is_enemy(true, iswhite, a,b){
-               
-                        return true
-                    }
-                }else{
-                    if self.chess_board2.board[a][b]==self.get_piece_w_en(iswhite,Piece::p)
-                    && self.is_enemy(false, iswhite, a,b){
-               
-                        return true
-                    }
-                } 
+            if iswhite {
+                if self.valid(ic-1,jc-1) {
+                    let a = (ic-1) as usize;
+                    let b = (jc-1) as usize;
+                    if board1 {
+                        if self.chess_board1.board[a][b]==Piece::p
+                        {
+                   
+                            return true
+                        }
+                    }else{
+                        if self.chess_board2.board[a][b]==Piece::p
+                        {
+                   
+                            return true
+                        }
+                    } 
+                }
+                if self.valid(ic-1,jc+1) {
+                    let a = (ic-1) as usize;
+                    let b = (jc+1) as usize;
+                    if board1 {
+                        if self.chess_board1.board[a][b]==Piece::p
+                       {
+                     
+                            return true
+                        }
+                    }else{
+                        if self.chess_board2.board[a][b]==Piece::p
+                        {
+          
+                            return true
+                        }
+                    } 
+                }
+            }else{
+                ic = (i as i32);
+                jc = (j as i32);
+                if self.valid(ic+1,jc-1) && self.valid(ic,jc) {
+                    let a = (ic+1) as usize;
+                    let b = (jc-1) as usize;
+                    if board1 {
+                        if self.chess_board1.board[a][b]==Piece::P
+                        {
+                            println!("{},{}: is a piyon",a,b);
+                            return true
+                        }
+                    }else{
+                        if self.chess_board2.board[a][b]==Piece::P
+                        {
+                   
+                            return true
+                        }
+                    } 
+                }
+                if self.valid(ic+1,jc+1) && self.valid(ic,jc) {
+                    let a = (ic+1) as usize;
+                    let b = (jc+1) as usize;
+                    if board1 {
+                        if self.chess_board1.board[a][b]==Piece::P
+                        {
+                     
+                            return true
+                        }
+                    }else{
+                        if self.chess_board2.board[a][b]==Piece::P
+                        {
+          
+                            return true
+                        }
+                    } 
+                }
             }
-            jc += 2;
-            if self.valid(ic,jc) {
-                let a = ic as usize;
-                let b = jc as usize;
-                if board1 {
-                    if self.chess_board1.board[a][b]==self.get_piece_w_en(iswhite,Piece::p)
-                    && self.is_enemy(true, iswhite, a,b){
-                 
-                        return true
-                    }
-                }else{
-                    if self.chess_board2.board[a][b]==self.get_piece_w_en(iswhite,Piece::p)
-                    && self.is_enemy(false, iswhite, a,b){
-      
-                        return true
-                    }
-                } 
-            }
+           
             //check for horizontal line
             jc = j as i32;
             ic = i as i32;
