@@ -800,12 +800,12 @@ impl ChessLogic {
     }
 
     pub fn legality_check(&mut self, board1:bool, i_old:usize,j_old:usize,i:usize,j:usize) -> bool{
-        match self.chess_board1[i_old][j_old] {
+        match self.chess_board1.board[i_old][j_old] {
             Piece::E | Piece::L => false,
             _ => { 
                 let vec = self.get_legal_moves(board1,i_old,j_old);
-                for i in vec.iter() {
-                    if i == (i,j) {
+                for (a,b) in vec.iter() {
+                    if *a == i && *b == j {
                         return true
                     }
                 }
