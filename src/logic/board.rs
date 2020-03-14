@@ -66,7 +66,7 @@ fn get_init_array() -> [[Piece; 8]; 8] {
     let mut arr = [[Piece::E; 8]; 8];
     for i in 0..8 {
         arr[1][i] = Piece::p;
-        //arr[6][i] = Piece::P;
+        arr[6][i] = Piece::P;
     }
         arr[7][0] = Piece::R;
         arr[7][1] = Piece::N;

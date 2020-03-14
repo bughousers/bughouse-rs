@@ -11,16 +11,15 @@ pub struct ChessLogic {
 }
 
 impl ChessLogic {
-    pub fn print(&self){
-        self.chess_board1.print_board();
-    }
+    pub fn print(&self,board1:bool){
+        if board1{
+            self.chess_board1.print_board();
+            println!("------------------------");
+        }else{
+            self.chess_board2.print_board();
+            println!("------------------------");
+        }
 
-    pub fn testfoo(&mut self) {
-        self.chess_board1.board[5][4] = Piece::P;
-        self.chess_board1.board[5][5] = Piece::p;
-        self.chess_board1.board[4][2] = Piece::R;
-        self.chess_board1.board[4][3] = Piece::q;
-        self.chess_board1.board[1][7] = Piece::E;
     }
 
     pub fn print_w_legal(&mut self,board1:bool,locs: &Vec<(usize,usize)>){
@@ -40,6 +39,7 @@ impl ChessLogic {
         for &(i,j,t) in vec.iter() {
             self.chess_board1.board[i][j] = t;
         }
+        println!("------------------------");
     }
 
     pub fn new() -> ChessLogic {
@@ -48,7 +48,7 @@ impl ChessLogic {
             chess_board2: ChessBoard::new(),
         }
     }
-    pub fn get_legal_moves(&self,board1:bool, old_i:usize, old_j:usize)
+    pub fn get_legal_moves(&mut self,board1:bool, old_i:usize, old_j:usize)
     -> Vec<(usize,usize)>
     {
         match self.chess_board1.board[old_i][old_j] {
@@ -281,7 +281,7 @@ impl ChessLogic {
             if self.is_empty(board1,ic,j) {
                 vec.push((ic,j));
             }else {
-                if self.is_enemy(board1,self.is_white(board1,i,j),i,j) {
+                if self.is_enemy(board1,self.is_white(board1,i,j),ic,j) {
                     vec.push((ic,j));
                 }
                 break;
@@ -302,7 +302,7 @@ impl ChessLogic {
         let mut jc = j;
 
         //lower right
-        while ic < 8 && jc < 8 {
+        while ic < 7 && jc < 7 {
             ic+=1;
             jc+=1;
             if self.is_empty(board1,ic,jc) {
@@ -317,7 +317,7 @@ impl ChessLogic {
         //upper right
         ic=i;
         jc=j;
-        while ic > 0 && jc < 8 {
+        while ic > 0 && jc < 7 {
             ic-=1;
             jc+=1;
             if self.is_empty(board1,ic,jc) {
@@ -347,7 +347,7 @@ impl ChessLogic {
         //lower left
         ic=i;
         jc=j;
-        while ic < 8 && jc > 0 {
+        while ic < 7 && jc > 0 {
             ic+=1;
             jc-=1;
             if self.is_empty(board1,ic,jc) {
@@ -413,8 +413,26 @@ impl ChessLogic {
         }
     }
 
+    pub fn get_piece_w_en(&self, iswhite:bool, piece:Piece) -> Piece {
+        match piece {
+            Piece::p | Piece::P => if iswhite {Piece::p} else {Piece::P} ,
+            Piece::r | Piece::R => if iswhite {Piece::r} else {Piece::R} ,
+            Piece::b | Piece::B => if iswhite {Piece::b} else {Piece::B} ,
+            Piece::k | Piece::K => if iswhite {Piece::k} else {Piece::K} ,
+            Piece::q | Piece::Q => if iswhite {Piece::q} else {Piece::Q} ,
+            Piece::n | Piece::N => if iswhite {Piece::n} else {Piece::N} ,
+            Piece::L => Piece::L,
+            Piece::E => Piece::E,
+
+        }
+    }
+
     //iswhite <=> the unit on the square is white
-    pub fn is_attacked(&self, board1:bool, iswhite:bool, i:usize,j:usize) -> bool {
+    pub fn is_attacked(&mut self, board1:bool, iswhite:bool, i:usize,j:usize) -> bool {
+        //remove yourself from board
+
+ 
+        
         //check for pawns
 
         //check for rook|queen on vertical
@@ -429,19 +447,20 @@ impl ChessLogic {
 
         let mut ic = (i as i32)-1;
         let mut jc = (j as i32)-1;
-        if iswhite{
             //check for pawns
             if self.valid(ic,jc) {
                 let a = ic as usize;
                 let b = jc as usize;
                 if board1 {
-                    if self.chess_board1.board[a][b]==Piece::p
-                    && self.is_enemy(true, true, a,b){
+                    if self.chess_board1.board[a][b]==self.get_piece_w_en(iswhite,Piece::p)
+                    && self.is_enemy(true, iswhite, a,b){
+               
                         return true
                     }
                 }else{
-                    if self.chess_board2.board[a][b]==Piece::p
-                    && self.is_enemy(false, true, a,b){
+                    if self.chess_board2.board[a][b]==self.get_piece_w_en(iswhite,Piece::p)
+                    && self.is_enemy(false, iswhite, a,b){
+               
                         return true
                     }
                 } 
@@ -451,13 +470,15 @@ impl ChessLogic {
                 let a = ic as usize;
                 let b = jc as usize;
                 if board1 {
-                    if self.chess_board1.board[a][b]==Piece::p
-                    && self.is_enemy(true, true, a,b){
+                    if self.chess_board1.board[a][b]==self.get_piece_w_en(iswhite,Piece::p)
+                    && self.is_enemy(true, iswhite, a,b){
+                 
                         return true
                     }
                 }else{
-                    if self.chess_board2.board[a][b]==Piece::p
-                    && self.is_enemy(false, true, a,b){
+                    if self.chess_board2.board[a][b]==self.get_piece_w_en(iswhite,Piece::p)
+                    && self.is_enemy(false, iswhite, a,b){
+      
                         return true
                     }
                 } 
@@ -467,8 +488,9 @@ impl ChessLogic {
             ic = i as i32;
             let mut jx = jc+1;
             while jx < 8 {
-                if self.check_for_piece(board1,Piece::r,ic,jx) || 
-                self.check_for_piece(board1,Piece::q,ic,jx) {
+                if self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::r),ic,jx) || 
+                self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::q),ic,jx) {
+
                     return true
                 }else if !self.check_for_piece(board1,Piece::E, ic,jx){
                     break;
@@ -477,8 +499,8 @@ impl ChessLogic {
             }
             jx = jc-1;
             while jx >= 0{
-                if self.check_for_piece(board1,Piece::r,ic,jx) || 
-                self.check_for_piece(board1,Piece::q,ic,jx) {
+                if self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::r),ic,jx) || 
+                self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::q),ic,jx) {
                     return true
                 }else if !self.check_for_piece(board1,Piece::E, ic,jx){
                     break;
@@ -488,8 +510,8 @@ impl ChessLogic {
             //check for vertical
             let mut ix = ic+1;
             while ix <8 {
-                if self.check_for_piece(board1,Piece::r,ix,jc) || 
-                self.check_for_piece(board1,Piece::q,ix,jc) {
+                if self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::r),ix,jc) || 
+                self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::q),ix,jc) {
                     return true
                 }else if !self.check_for_piece(board1,Piece::E, ix,jc){
                     break;
@@ -498,8 +520,8 @@ impl ChessLogic {
             }
             ix = ic-1;
             while ix >=0 {
-                if self.check_for_piece(board1,Piece::r,ix,jc) || 
-                self.check_for_piece(board1,Piece::q,ix,jc) {
+                if self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::r),ix,jc) || 
+                self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::q),ix,jc) {
                     return true
                 }else if !self.check_for_piece(board1,Piece::E, ix,jc){
                     break;
@@ -513,8 +535,9 @@ impl ChessLogic {
             while ic < 7 && jc < 7 {
                 ic+=1;
                 jc+=1;
-                if self.check_for_piece(board1,Piece::q,ic,jc) ||
-                self.check_for_piece(board1,Piece::b,ic,jc) {
+                if self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::q),ic,jc) ||
+                self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::b),ic,jc) {
+            
                     return true
                 }else if !self.check_for_piece(board1,Piece::E, ic,jc){
                     break;
@@ -527,8 +550,9 @@ impl ChessLogic {
             while ic > 0 && jc < 7 {
                 ic-=1;
                 jc+=1;
-                if self.check_for_piece(board1,Piece::q,ic,jc) ||
-                self.check_for_piece(board1,Piece::b,ic,jc) {
+                if self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::q),ic,jc) ||
+                self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::b),ic,jc) {
+              
                     return true
                 }else if !self.check_for_piece(board1,Piece::E, ic,jc){
                     break;
@@ -541,8 +565,9 @@ impl ChessLogic {
             while ic > 0 && jc > 0 {
                 ic-=1;
                 jc-=1;
-                if self.check_for_piece(board1,Piece::q,ic,jc) ||
-                self.check_for_piece(board1,Piece::b,ic,jc) {
+                if self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::q),ic,jc) ||
+                self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::b),ic,jc) {
+                 
                     return true
                 }else if !self.check_for_piece(board1,Piece::E, ic,jc){
                     break;
@@ -555,8 +580,9 @@ impl ChessLogic {
             while ic < 7 && jc > 0 {
                 ic+=1;
                 jc-=1;
-                if self.check_for_piece(board1,Piece::q,ic,jc) ||
-                self.check_for_piece(board1,Piece::b,ic,jc) {
+                if self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::q),ic,jc) ||
+                self.check_for_piece(board1,self.get_piece_w_en(iswhite,Piece::b),ic,jc) {
+              
                     return true
                 }else if !self.check_for_piece(board1,Piece::E, ic,jc){
                     break;
@@ -566,16 +592,20 @@ impl ChessLogic {
             ic = i as i32;
             jc = j as i32;
             let a = [-2,2];
-            let b = [-1,-1];
+            let b = [-1,1];
             for i_off in a.iter() {
                 for j_off in b.iter() {
                     if self.valid(ic+i_off,jc+j_off)  {
                         if board1 {
-                            if self.chess_board1.board[(ic+i_off) as usize][(jc+j_off) as usize] == Piece::n {
+                            if self.chess_board1.board[(ic+i_off) as usize][(jc+j_off) as usize] == 
+                            self.get_piece_w_en(iswhite,Piece::n) {
+                              
                                 return true
                             }
                         }else{
-                            if self.chess_board2.board[(ic+i_off) as usize][(jc+j_off) as usize] == Piece::n {
+                            if self.chess_board2.board[(ic+i_off) as usize][(jc+j_off) as usize] == 
+                            self.get_piece_w_en(iswhite,Piece::n){
+                           
                                 return true
                             }
                         }
@@ -586,11 +616,15 @@ impl ChessLogic {
                 for i_off in b.iter() {
                     if self.valid(ic+i_off,jc+j_off)  {
                         if board1 {
-                            if self.chess_board1.board[(ic+i_off) as usize][(jc+j_off) as usize] == Piece::n {
+                            if self.chess_board1.board[(ic+i_off) as usize][(jc+j_off) as usize] == 
+                            self.get_piece_w_en(iswhite,Piece::n) {
+                               
                                 return true
                             }
                         }else{
-                            if self.chess_board2.board[(ic+i_off) as usize][(jc+j_off) as usize] == Piece::n {
+                            if self.chess_board2.board[(ic+i_off) as usize][(jc+j_off) as usize] == 
+                            self.get_piece_w_en(iswhite,Piece::n) {
+                              
                                 return true
                             }
                         }
@@ -603,14 +637,15 @@ impl ChessLogic {
             for i_off in c.iter() {
                 for j_off in d.iter() {
                     if self.valid(ic+i_off,jc+j_off) && !(*i_off==0 && *j_off==0) {
-                        if self.chess_board1.board[(ic+i_off) as usize][(jc+j_off) as usize] == Piece::k {
+                        if self.chess_board1.board[(ic+i_off) as usize][(jc+j_off) as usize] == 
+                        self.get_piece_w_en(iswhite,Piece::k) {
+                    
                             return true
                         }
                     }
                 }
             }
-   
-        }
+     
         false
     }
 
@@ -660,6 +695,55 @@ impl ChessLogic {
         }else{
             self.chess_board2.board[i][j] = piece;
         }
+    }
+
+    fn king_move(&mut self, board1:bool, i:usize,j:usize) -> Vec<(usize,usize)>{
+        let mut a = [-1,0,1];
+        let mut b = [-1,0,1];
+        let mut vec = Vec::new();
+        let ix = i as i32;
+        let jx = j as i32;
+        let mut piece = Piece::E;
+        let mut wayt = true;
+        if board1 {
+            piece = self.chess_board1.board[i][j];
+            self.chess_board1.board[i][j] = Piece::E;
+        }else{
+            piece = self.chess_board2.board[i][j];
+            self.chess_board2.board[i][j] = Piece::E;
+        }
+        if piece == Piece::K {
+            wayt = true;
+        }else{
+            wayt = false;
+        }
+        for i_off in a.iter(){
+            for j_off in b.iter(){
+                if self.valid(i_off+ix,j_off+jx) && !(*i_off==0 && *j_off==0){
+                    let mut ic = i_off+ix;
+                    let mut jc = j_off+jx;
+                    if !self.is_attacked(board1,wayt,ic as usize,jc as usize) 
+                    {
+                        if board1 {
+                            if self.chess_board1.board[ic as usize][jc as usize] == Piece::E {
+                                vec.push((ic as usize,jc as usize));
+                            }
+                        }else{
+                            if self.chess_board2.board[ic as usize][jc as usize] == Piece::E {
+                                vec.push((ic as usize,jc as usize));
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+        if board1 {
+            self.chess_board1.board[i][j] = piece;
+        }else{
+            self.chess_board2.board[i][j] = piece;
+        }
+        vec
     }
 
 
