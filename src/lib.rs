@@ -7,11 +7,11 @@ mod tests {
     use crate::logic::ChessLogic;
 
     #[test]
-    fn test_trivial() {
+    fn trivial() {
         assert_eq!(1,1);
     }
     #[test]
-    fn test_king1(){
+    fn king1(){
         let mut cl = ChessLogic::new();
 
         cl.all_empty(true);
@@ -36,7 +36,7 @@ mod tests {
     }
 
     #[test]
-    fn test_rook2(){
+    fn rook2(){
         let mut cl = ChessLogic::new();
         cl.all_empty(true);
         cl.set_piece(true,Piece::q,5,0);
@@ -79,7 +79,7 @@ mod tests {
     }
 
     #[test]
-    fn test_attacks1(){
+    fn attacks1(){
         let mut cl = ChessLogic::new();
         cl.chess_board1.board[5][4] = Piece::P;
         cl.chess_board1.board[5][5] = Piece::p;
@@ -146,7 +146,7 @@ mod tests {
     }
 
     #[test]
-    fn test_rook_mov(){
+    fn rook_move(){
         let mut cl = ChessLogic::new();
 
         cl.all_empty(true);
@@ -186,14 +186,14 @@ mod tests {
         assert_eq!(vec_norm2,vecbyhand_norm);
     }
 
-
-    fn test_bishop_mov(){
+    #[test]
+    fn bishop_move(){
         let mut cl = ChessLogic::new();
 
         cl.all_empty(true);
         cl.set_piece(true,Piece::b,4,4);
         cl.set_piece(true,Piece::b,5,5);
-        let vec = cl.get_legal_moves(true,4,4);
+        let mut vec = cl.get_legal_moves(true,4,4);
         cl.print_w_legal(true,&vec);
         let mut vecbyhand = Vec::new();
         vecbyhand.push((0,0));
@@ -215,6 +215,62 @@ mod tests {
         vecbyhand_norm.sort();
         
         assert_eq!(vec_norm,vecbyhand_norm);
+
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::B,4,4);
+        cl.set_piece(true,Piece::B,5,5);
+        vec = cl.get_legal_moves(true,4,4);
+        cl.print_w_legal(true,&vec);
+
+        let mut vec_norm = normalize(&vec);
+        let mut vecbyhand_norm = normalize(&vecbyhand);
+        vec_norm.sort();
+        vecbyhand_norm.sort();
+        
+        assert_eq!(vec_norm,vecbyhand_norm);
+    }
+
+    #[test]
+    fn queen_move(){
+        let mut cl = ChessLogic::new();
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::Q,0,0);
+        cl.set_piece(true,Piece::q,7,7);
+        let mut vec_queen = cl.get_legal_moves(true,7,7);
+        let mut vecbyhand_queen = Vec::new();
+
+
+        vecbyhand_queen.push((0,0));
+        vecbyhand_queen.push((1,1));
+        vecbyhand_queen.push((2,2));
+        vecbyhand_queen.push((3,3));
+        vecbyhand_queen.push((4,4));
+        vecbyhand_queen.push((5,5));
+        vecbyhand_queen.push((6,6));
+
+        vecbyhand_queen.push((6,7));
+        vecbyhand_queen.push((5,7));
+        vecbyhand_queen.push((4,7));
+        vecbyhand_queen.push((3,7));
+        vecbyhand_queen.push((2,7));
+        vecbyhand_queen.push((1,7));
+        vecbyhand_queen.push((0,7));
+
+        vecbyhand_queen.push((7,6));
+        vecbyhand_queen.push((7,5));
+        vecbyhand_queen.push((7,4));
+        vecbyhand_queen.push((7,3));
+        vecbyhand_queen.push((7,2));
+        vecbyhand_queen.push((7,1));
+        vecbyhand_queen.push((7,0));
+
+        let mut vec_norm = normalize(&vec_queen);
+        let mut vecbyhand_norm = normalize(&vecbyhand_queen);
+        vec_norm.sort();
+        vecbyhand_norm.sort();
+        
+        assert_eq!(vec_norm,vecbyhand_norm);
+
 
     }
 
