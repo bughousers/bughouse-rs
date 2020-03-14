@@ -144,4 +144,78 @@ mod tests {
         cl.print_w_legal(true,&vec);
         assert_eq!(vec,Vec::new())
     }
+
+    #[test]
+    fn test_rook_mov(){
+        let mut cl = ChessLogic::new();
+
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::R,4,4);
+        cl.set_piece(true,Piece::R,4,6);
+        let vec = cl.get_legal_moves(true,4,4);
+        cl.print_w_legal(true,&vec);
+        let mut vecbyhand = Vec::new();
+
+        vecbyhand.push((4,5));
+        vecbyhand.push((3,4));
+        vecbyhand.push((2,4));
+        vecbyhand.push((1,4));
+        vecbyhand.push((0,4));
+        vecbyhand.push((5,4));
+        vecbyhand.push((6,4));
+        vecbyhand.push((7,4));
+        vecbyhand.push((4,3));
+        vecbyhand.push((4,2));
+        vecbyhand.push((4,1));
+        vecbyhand.push((4,0));
+
+        let mut vec_norm = normalize(&vec);
+        let mut vecbyhand_norm = normalize(&vecbyhand);
+        vec_norm.sort();
+        vecbyhand_norm.sort();
+        
+        assert_eq!(vec_norm,vecbyhand_norm);
+
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::r,4,4);
+        cl.set_piece(true,Piece::r,4,6);
+        let vec2 = cl.get_legal_moves(true,4,4);
+        cl.print_w_legal(true,&vec2);
+        let mut vec_norm2 = normalize(&vec2);
+        vec_norm2.sort();
+        assert_eq!(vec_norm2,vecbyhand_norm);
+    }
+
+
+    fn test_bishop_mov(){
+        let mut cl = ChessLogic::new();
+
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::b,4,4);
+        cl.set_piece(true,Piece::b,5,5);
+        let vec = cl.get_legal_moves(true,4,4);
+        cl.print_w_legal(true,&vec);
+        let mut vecbyhand = Vec::new();
+        vecbyhand.push((0,0));
+        vecbyhand.push((1,1));
+        vecbyhand.push((2,2));
+        vecbyhand.push((3,3));
+
+        vecbyhand.push((5,3));
+        vecbyhand.push((6,2));
+        vecbyhand.push((7,1));
+
+        vecbyhand.push((3,5));
+        vecbyhand.push((2,6));
+        vecbyhand.push((1,7));
+
+        let mut vec_norm = normalize(&vec);
+        let mut vecbyhand_norm = normalize(&vecbyhand);
+        vec_norm.sort();
+        vecbyhand_norm.sort();
+        
+        assert_eq!(vec_norm,vecbyhand_norm);
+
+    }
+
 }
