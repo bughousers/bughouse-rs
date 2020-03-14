@@ -406,4 +406,16 @@ mod tests {
         assert_eq!(vec,[]);
     }
 
+    #[test]
+    fn legality_check_test(){
+        let mut cl = ChessLogic::new();
+        //pawns
+        assert_eq!(true,cl.legality_check(true, 1,1,3,1));
+        assert_eq!(true,cl.legality_check(true, 1,1,2,1));
+        assert_eq!(false,cl.legality_check(true, 1,1,4,1));
+        assert_eq!(true,cl.legality_check(true, 6,7,5,7));
+        assert_eq!(false,cl.legality_check(true, 6,7,6,7));
+        assert_eq!(false,cl.legality_check(true, 6,7,5,6));
+    }
+
 }
