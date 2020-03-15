@@ -917,6 +917,101 @@ impl ChessLogic {
         }else{
             self.chess_board2.board[i][j] = piece;
         }
+        //check for castling
+        if board1 {
+            if wayt {
+                if !self.chess_board1.white_k_moved 
+                && self.chess_board1.board[7][7] == Piece::R 
+                && self.chess_board1.board[7][6] == Piece::E
+                && self.chess_board1.board[7][5] == Piece::E
+                && !self.is_attacked(board1,wayt,7,6) 
+                && !self.is_attacked(board1,wayt,7,5)
+                && !self.is_attacked(board1,wayt,7,4)
+                {
+                    vec.push((7,6))
+                }
+                if !self.chess_board1.white_k_moved 
+                && self.chess_board1.board[7][0] == Piece::R 
+                && self.chess_board1.board[7][1] == Piece::E
+                && self.chess_board1.board[7][2] == Piece::E
+                && self.chess_board1.board[7][3] == Piece::E
+                && !self.is_attacked(board1,wayt,7,3) 
+                && !self.is_attacked(board1,wayt,7,2)
+                && !self.is_attacked(board1,wayt,7,4)
+                && !self.is_attacked(board1,wayt,7,1) {
+                    vec.push((7,2))
+                }
+            }else{
+                if !self.chess_board1.black_k_moved 
+                && self.chess_board1.board[0][7] == Piece::r 
+                && self.chess_board1.board[0][6] == Piece::E
+                && self.chess_board1.board[0][5] == Piece::E
+                && !self.is_attacked(board1,wayt,0,6) 
+                && !self.is_attacked(board1,wayt,0,5)
+                && !self.is_attacked(board1,wayt,0,4)
+                {
+                    vec.push((0,6))
+                }
+                if !self.chess_board1.black_k_moved 
+                && self.chess_board1.board[0][0] == Piece::r 
+                && self.chess_board1.board[0][1] == Piece::E
+                && self.chess_board1.board[0][2] == Piece::E
+                && self.chess_board1.board[0][3] == Piece::E
+                && !self.is_attacked(board1,wayt,0,3) 
+                && !self.is_attacked(board1,wayt,0,2)
+                && !self.is_attacked(board1,wayt,0,4)
+                && !self.is_attacked(board1,wayt,0,1) {
+                    vec.push((0,2))
+                }
+            }
+        }else{
+            if wayt {
+                if !self.chess_board2.white_k_moved 
+                && self.chess_board2.board[7][7] == Piece::R 
+                && self.chess_board2.board[7][6] == Piece::E
+                && self.chess_board2.board[7][5] == Piece::E
+                && !self.is_attacked(board1,wayt,7,6) 
+                && !self.is_attacked(board1,wayt,7,5)
+                && !self.is_attacked(board1,wayt,7,4)
+                {
+                    vec.push((7,6))
+                }
+                if !self.chess_board2.white_k_moved 
+                && self.chess_board2.board[7][0] == Piece::R 
+                && self.chess_board2.board[7][1] == Piece::E
+                && self.chess_board2.board[7][2] == Piece::E
+                && self.chess_board2.board[7][3] == Piece::E
+                && !self.is_attacked(board1,wayt,7,3) 
+                && !self.is_attacked(board1,wayt,7,2)
+                && !self.is_attacked(board1,wayt,7,4)
+                && !self.is_attacked(board1,wayt,7,1) {
+                    vec.push((7,2))
+                }
+            }else{
+                if !self.chess_board2.black_k_moved 
+                && self.chess_board2.board[0][7] == Piece::r 
+                && self.chess_board2.board[0][6] == Piece::E
+                && self.chess_board2.board[0][5] == Piece::E
+                && !self.is_attacked(board1,wayt,0,6) 
+                && !self.is_attacked(board1,wayt,0,5)
+                && !self.is_attacked(board1,wayt,0,4)
+                {
+                    vec.push((0,6))
+                }
+                if !self.chess_board2.black_k_moved 
+                && self.chess_board2.board[0][0] == Piece::r 
+                && self.chess_board2.board[0][1] == Piece::E
+                && self.chess_board2.board[0][2] == Piece::E
+                && self.chess_board2.board[0][3] == Piece::E
+                && !self.is_attacked(board1,wayt,0,3) 
+                && !self.is_attacked(board1,wayt,0,2)
+                && !self.is_attacked(board1,wayt,0,4)
+                && !self.is_attacked(board1,wayt,0,1) {
+                    vec.push((0,2))
+                }
+            }
+            
+        }
         vec
     }
 
@@ -943,7 +1038,14 @@ impl ChessLogic {
     pub fn movemaker(&mut self, board1:bool, i_old:usize,j_old:usize,i:usize,j:usize) -> bool{
         if self.legality_check(board1,i_old,j_old,i,j) {
             if board1 {
+                match self.chess_board1.board[i_old][j_old] {
+                    Piece::K => self.chess_board1.white_k_moved = true,
+                    Piece::k => self.chess_board1.black_k_moved = true,
+                    _ => {},
+                }
+
                 let tmp = self.chess_board1.board[i][j];
+
                 if tmp==Piece::K || tmp==Piece::k {
                     self.finish_up();
                 }
@@ -961,6 +1063,12 @@ impl ChessLogic {
                 self.chess_board1.board[i_old][j_old]=Piece::E;
                 true
             }else{
+                match self.chess_board2.board[i_old][j_old] {
+                    Piece::K => self.chess_board2.white_k_moved = true,
+                    Piece::k => self.chess_board2.black_k_moved = true,
+                    _ => {},
+                }
+
                 let tmp = self.chess_board2.board[i][j];
                 if tmp==Piece::K || tmp==Piece::k {
                     self.finish_up();

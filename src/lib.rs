@@ -587,4 +587,71 @@ mod tests {
 
     }
 
+    #[test]
+    fn castling_black(){
+        let mut cl = ChessLogic::new();
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::k,0,4);
+        cl.set_piece(true,Piece::r,0,7);
+        cl.set_piece(true,Piece::r,0,0);
+        let vec = cl.get_legal_moves(true,0,4);
+        cl.print_w_legal(true,&vec);
+        assert!(contains(&vec,(0,6)));
+        assert!(contains(&vec,(0,2)));
+
+        cl.set_piece(true,Piece::R,7,1);
+        let vec = cl.get_legal_moves(true,0,4);
+        assert!(contains(&vec,(0,6)));
+        assert!(!contains(&vec,(0,2)));
+
+        cl.set_piece(true,Piece::R,7,6);
+        let vec = cl.get_legal_moves(true,0,4);
+        assert!(!contains(&vec,(0,6)));
+        assert!(!contains(&vec,(0,2)));
+
+        cl.set_piece(true,Piece::E,7,1);
+        cl.set_piece(true,Piece::E,7,6);
+        cl.set_piece(true,Piece::Q,7,4);
+        assert!(!contains(&vec,(0,6)));
+        assert!(!contains(&vec,(0,2)));
+    }
+
+    #[test]
+    fn castling_white(){
+        let mut cl = ChessLogic::new();
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::K,7,4);
+        cl.set_piece(true,Piece::R,7,7);
+        cl.set_piece(true,Piece::R,7,0);
+        let vec = cl.get_legal_moves(true,7,4);
+        cl.print_w_legal(true,&vec);
+        assert!(contains(&vec,(7,6)));
+        assert!(contains(&vec,(7,2)));
+
+        cl.set_piece(true,Piece::r,0,1);
+        let vec = cl.get_legal_moves(true,7,4);
+        assert!(contains(&vec,(7,6)));
+        assert!(!contains(&vec,(7,2)));
+
+        cl.set_piece(true,Piece::r,0,6);
+        let vec = cl.get_legal_moves(true,7,4);
+        assert!(!contains(&vec,(7,6)));
+        assert!(!contains(&vec,(7,2)));
+
+        cl.set_piece(true,Piece::E,0,1);
+        cl.set_piece(true,Piece::E,0,6);
+        cl.set_piece(true,Piece::q,0,4);
+        assert!(!contains(&vec,(7,6)));
+        assert!(!contains(&vec,(7,2)));
+    }
+
+    pub fn contains(vec: &Vec<(usize,usize)>,(i,j): (usize,usize)) -> bool {
+        for (a,b) in vec.iter() {
+            if *a==i && j==*b {
+                return true
+            }
+        }
+        return false
+    }
+
 }

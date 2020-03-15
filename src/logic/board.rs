@@ -43,6 +43,8 @@ impl fmt::Display for Piece {
 
 pub struct ChessBoard {
     pub board: [[Piece; 8]; 8],
+    pub white_k_moved: bool,
+    pub black_k_moved: bool,
 }
 
 
@@ -52,6 +54,8 @@ impl ChessBoard {
         let arr = get_init_array();
         ChessBoard {
             board: arr,
+            white_k_moved: false,
+            black_k_moved: false,
         }
         
     }
