@@ -43,6 +43,20 @@ pub mod parser {
         }
     }
 
+    pub fn ind2char(a: usize) -> char {
+        match a {
+            0 => 'a',
+            1 => 'b',
+            2 => 'c',
+            3 => 'd',
+            4 => 'e',
+            5 => 'f',
+            6 => 'g',
+            7 => 'h',
+            _ => {println!("Nonlegal input, char2ind"); 'x'},
+        }
+    }
+
     pub fn line2line(a: char) -> usize {
         match a {
             '1' => 7,
@@ -54,6 +68,20 @@ pub mod parser {
             '7' => 1,
             '8' => 0,
             _ => {println!("Nonlegal input, char2ind"); 666},
+        }
+    }
+
+    pub fn ind2line(a: usize) -> char {
+        match a {
+            0 => '8',
+            1 => '7',
+            2 => '6',
+            3 => '5',
+            4 => '4',
+            5 => '3',
+            6 => '2',
+            7 => '1',
+            _ => {println!("Nonlegal input, char2ind"); 'x'},
         }
     }
 

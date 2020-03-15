@@ -17,7 +17,11 @@ pub struct ChessLogic {
     //the order is P-R-N-B-Q
     pub upgrade_to1: Piece,
     pub upgrade_to2: Piece,
-    board1_white_capture: [u8;5],
+    half_moves_last_capture1: usize,
+    half_moves_last_capture2: usize,
+    movectr1: usize,
+    movectr2: usize,
+    board1_white_capture: [u8;5], //pieces that can be deployed on board1 (white pieces)
     board1_black_capture: [u8;5],
     board2_white_capture: [u8;5],
     board2_black_capture: [u8;5],
@@ -39,6 +43,20 @@ impl ChessLogic {
         match board1 {
             true => self.white_active_1,
             false => self.white_active_2,
+        }
+    }
+
+    pub fn get_movectr(&self, board1:bool) -> usize {
+        match board1 {
+            true => self.movectr1,
+            false => self.movectr2,
+        }
+    }
+
+    pub fn get_half_moves(&self, board1:bool) -> usize {
+        match board1 {
+            true => self.half_moves_last_capture1,
+            false => self.half_moves_last_capture2,
         }
     }
 
@@ -123,6 +141,10 @@ impl ChessLogic {
             upgrade_to2: Piece::E,
             white_active_1: true,
             white_active_2: true,
+            half_moves_last_capture1: 0,
+            half_moves_last_capture2: 0,
+            movectr1: 0,
+            movectr2: 0,
             board1_white_capture: [0;5],
             board1_black_capture: [0;5],
             board2_white_capture: [0;5],
@@ -360,16 +382,30 @@ impl ChessLogic {
     }
 
     fn is_white(&self, board1:bool, i:usize, j:usize) -> bool {
-        match self.chess_board1.board[i][j] {
-            Piece::E => false,
-            Piece::L => false,
-            Piece::p  => false,
-            Piece::r | Piece::Ur => false,
-            Piece::n | Piece::Un => false,
-            Piece::b | Piece::Ub => false,
-            Piece::q | Piece::Uq => false,
-            Piece::k  => false,
-            _ => true,
+        if board1 {
+            match self.chess_board1.board[i][j] {
+                Piece::E => false,
+                Piece::L => false,
+                Piece::p  => false,
+                Piece::r | Piece::Ur => false,
+                Piece::n | Piece::Un => false,
+                Piece::b | Piece::Ub => false,
+                Piece::q | Piece::Uq => false,
+                Piece::k  => false,
+                _ => true,
+            }
+        }else{
+            match self.chess_board2.board[i][j] {
+                Piece::E => false,
+                Piece::L => false,
+                Piece::p  => false,
+                Piece::r | Piece::Ur => false,
+                Piece::n | Piece::Un => false,
+                Piece::b | Piece::Ub => false,
+                Piece::q | Piece::Uq => false,
+                Piece::k  => false,
+                _ => true,
+            }
         }
     }
 
@@ -1117,6 +1153,8 @@ impl ChessLogic {
                             }
                             self.chess_board1.white_k_moved = true;
                             self.white_active_1 = !self.white_active_1;
+
+                            self.half_moves_last_capture1 += 1;
                             return true 
                         }
                         self.chess_board1.white_k_moved = true;
@@ -1143,6 +1181,9 @@ impl ChessLogic {
                             }
                             self.chess_board1.black_k_moved = true;
                             self.white_active_1 = !self.white_active_1;
+
+                            self.half_moves_last_capture1 += 1;
+                            self.movectr1+=1;
                             return true 
                         }
                      
@@ -1155,10 +1196,20 @@ impl ChessLogic {
                             return false
                         }else{
                         if i==0 {
+                           
+                            if self.upgrade_to1 == Piece::Q ||  self.upgrade_to1 == Piece::R  || self.upgrade_to1 == Piece::B  ||self.upgrade_to1 == Piece::N {
+                                self.half_moves_last_capture1=0;
+                                match self.box_index(self.chess_board1.board[i][j]) {
+                                    None => {},
+                                    Some(x) => {self.board2_black_capture[x] += 1},
+                                }
+                            }
+                            
+                           
                             match self.upgrade_to1 {
                                 Piece::Q => { self.upgrade_to1 = Piece::E; self.chess_board1.board[i][j] = Piece::UQ;
                                     self.chess_board1.board[i_old][j_old] = Piece::E; 
-                                    self.white_active_1 = !self.white_active_1;return true},
+                                    self.white_active_1 = !self.white_active_1; return true},
                                 Piece::R => { self.upgrade_to1 = Piece::E; self.chess_board1.board[i][j] = Piece::UR;
                                     self.chess_board1.board[i_old][j_old] = Piece::E;
                                     self.white_active_1 = !self.white_active_1;return true},
@@ -1179,6 +1230,15 @@ impl ChessLogic {
                             return false
                         }else {
                        if i==7 {
+
+                        if self.upgrade_to1 == Piece::q ||  self.upgrade_to1 == Piece::r  || self.upgrade_to1 == Piece::b  ||self.upgrade_to1 == Piece::n {
+                            self.half_moves_last_capture1=0;
+                            match self.box_index(self.chess_board1.board[i][j]) {
+                                None => {},
+                                Some(x) => {self.board2_white_capture[x] += 1},
+                            }
+                        }
+
                             match self.upgrade_to1 {
                                 Piece::q => {self.upgrade_to1 = Piece::E;self.chess_board1.board[i][j] = Piece::Uq;
                                 self.chess_board1.board[i_old][j_old] = Piece::E;
@@ -1200,15 +1260,35 @@ impl ChessLogic {
                     _ => {},
                 }
 
+               
                 if !(( self.white_active_1 && self.is_white(board1,i_old,j_old)) 
                 || (!self.white_active_1 && !self.is_white(board1,i_old,j_old))) {
                     //not your turn!!!
                     println!("Siktir git hamlen degil!");
                     return false
                 }
-
                 let tmp = self.chess_board1.board[i][j];
 
+                //check if any piece is captured 
+                if tmp!=Piece::E {
+                    self.half_moves_last_capture1=0;
+                }else {
+                    self.half_moves_last_capture1+=1;
+                }
+
+                //check if pawn is moved
+                if self.chess_board1.board[i_old][j_old]==Piece::P {
+                    self.half_moves_last_capture1=0;
+                }else if self.chess_board1.board[i_old][j_old]==Piece::p {
+                    self.half_moves_last_capture1=0;
+                }
+
+                //check if black has moved
+                if !self.is_white(board1,i_old,j_old){
+                    self.movectr1+=1;
+                }
+
+                //check if game  should end
                 if tmp==Piece::K || tmp==Piece::k {
                     self.finish_up();
                 }
@@ -1227,6 +1307,7 @@ impl ChessLogic {
                 self.chess_board1.board[i_old][j_old]=Piece::E;
                 self.white_active_1 = !self.white_active_1;
                 return true
+
             }else{
                 match self.chess_board2.board[i_old][j_old] {
                     Piece::K => 
@@ -1249,6 +1330,8 @@ impl ChessLogic {
                             }
                             self.chess_board2.white_k_moved = true;
                             self.white_active_2 = !self.white_active_2;
+
+                            self.half_moves_last_capture2 += 1;
                             return true 
                         }
                         self.chess_board2.white_k_moved = true;
@@ -1274,6 +1357,9 @@ impl ChessLogic {
                             }
                             self.chess_board2.black_k_moved = true;
                             self.white_active_2 = !self.white_active_2;
+
+                            self.half_moves_last_capture2 += 1;
+                            self.movectr2+=1;
                             return true 
                         }
                         
@@ -1286,6 +1372,15 @@ impl ChessLogic {
                             return false
                         }else{
                         if i==0 {
+
+                            if self.upgrade_to2 == Piece::Q ||  self.upgrade_to2 == Piece::R  
+                            || self.upgrade_to2 == Piece::B || self.upgrade_to2 == Piece::N {
+                                self.half_moves_last_capture2=0;
+                                match self.box_index(self.chess_board2.board[i][j]) {
+                                    None => {},
+                                    Some(x) => {self.board1_black_capture[x] += 1},
+                                }
+                            }
                             match self.upgrade_to2 {
                                 Piece::Q => { self.upgrade_to2 = Piece::E;self.chess_board2.board[i][j] = Piece::UQ;
                                     self.chess_board2.board[i_old][j_old] = Piece::E;
@@ -1310,6 +1405,15 @@ impl ChessLogic {
                             return false
                         }else{
                        if i==7 {
+                            if self.upgrade_to2 == Piece::q || self.upgrade_to2 == Piece::r 
+                             || self.upgrade_to2 == Piece::b || self.upgrade_to2 == Piece::n {
+                                self.half_moves_last_capture2=0;
+                                match self.box_index(self.chess_board2.board[i][j]) {
+                                    None => {},
+                                    Some(x) => {self.board1_white_capture[x] += 1},
+                                }
+                            }
+
                             match self.upgrade_to2 {
                                 Piece::q => { self.upgrade_to2 = Piece::E;self.chess_board2.board[i][j] = Piece::Uq;
                                 self.chess_board2.board[i_old][j_old] = Piece::E; 
@@ -1340,9 +1444,31 @@ impl ChessLogic {
 
 
                 let tmp = self.chess_board2.board[i][j];
+
+                //check if any piece is captured 
+                if tmp!=Piece::E {
+                    self.half_moves_last_capture2=0;
+                }else {
+                    self.half_moves_last_capture2+=1;
+                }
+
+                //check if pawn is moved
+                if self.chess_board2.board[i_old][j_old]==Piece::P {
+                    self.half_moves_last_capture2=0;
+                }else if self.chess_board2.board[i_old][j_old]==Piece::p {
+                    self.half_moves_last_capture2=0;
+                }
+
+                //check if black has moved
+                if !self.is_white(board1,i_old,j_old){
+                    self.movectr2+=1;
+                }
+
+                //check if game  should end
                 if tmp==Piece::K || tmp==Piece::k {
                     self.finish_up();
                 }
+
                 match self.box_index(tmp) {
                     None => {}, //nothing to di
                     Some(a) => {

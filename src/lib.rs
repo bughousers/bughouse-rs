@@ -585,6 +585,8 @@ mod tests {
         cl.set_piece(true,Piece::r,4,0);
         cl.white_active_1 = false; 
         assert!(cl.movemaker(true,4,0,0,0));
+        println!("{}== num of capture rooks on board1 which are white",
+        cl.get_captured_piece(false,true,1));
         assert!(cl.get_captured_piece(false,true,1)==1);
         cl.set_piece(true,Piece::Q,0,7);
         let vec = cl.get_legal_moves(true,0,0);
@@ -599,6 +601,39 @@ mod tests {
         assert!(cl.get_captured_piece(false,true,4)==2);
         cl.set_piece(true,Piece::K,6,7);
         cl.movemaker(true,6,7,7,7);
+    }
+
+    #[test]
+    fn capture_piece2(){
+        let mut cl = ChessLogic::new();
+        cl.all_empty(false);
+        cl.set_piece(false,Piece::R,0,0);
+        cl.set_piece(false,Piece::r,4,0);
+        cl.white_active_2 = false; 
+        let vec2 = cl.get_legal_moves(false,4,0);
+
+        cl.print_w_legal(false,&vec2);
+        assert!(cl.movemaker(false,4,0,0,0));
+        println!("{}",cl.get_captured_piece(true,true,1));
+        assert!(cl.get_captured_piece(true,true,1)==1);
+
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::R,0,0);
+        cl.set_piece(true,Piece::r,4,0);
+        assert!(cl.white_active_2);
+        let vec3 = cl.get_legal_moves(true,0,0);
+        cl.print_w_legal(true,&vec3);
+        assert!(cl.movemaker(true,0,0,4,0));
+        assert!(cl.get_captured_piece(false,false,1)==1);
+
+        cl.all_empty(false);
+        cl.set_piece(false,Piece::R,0,0);
+        cl.set_piece(false,Piece::r,4,0);
+        assert!(cl.white_active_2);
+        let vec = cl.get_legal_moves(false,0,0);
+        cl.print_w_legal(false,&vec);
+        assert!(cl.movemaker(false,0,0,4,0));
+        assert!(cl.get_captured_piece(true,false,1)==1);
     }
 
     #[test]
