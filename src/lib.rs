@@ -408,7 +408,7 @@ mod tests {
     }
 
     #[test]
-    fn legality_check_test(){
+    fn legality_check(){
         let mut cl = ChessLogic::new();
         //pawns
         assert_eq!(true,cl.legality_check(true, 1,1,3,1));
@@ -419,4 +419,96 @@ mod tests {
         assert_eq!(false,cl.legality_check(true, 6,7,5,6));
     }
 
+    #[test]
+    fn board2_1(){
+        let mut cl = ChessLogic::new();
+        cl.all_empty(false);
+        cl.set_piece(false,Piece::q,5,0);
+        cl.set_piece(false,Piece::k,3,0);
+        cl.set_piece(false,Piece::r,4,0);
+        cl.set_piece(false,Piece::b,4,1);
+        let vecc = cl.get_legal_moves(false,4,0);
+        cl.print_w_legal(false,&vecc);
+        assert_eq!(
+            vecc,Vec::new()
+        );
+
+        cl.all_empty(false);
+        cl.set_piece(false,Piece::Q,5,0);
+        cl.set_piece(false,Piece::K,3,0);
+        cl.set_piece(false,Piece::r,4,0);
+        cl.set_piece(false,Piece::B,4,1);
+
+        let vec = cl.get_legal_moves(false,4,0);
+        let mut vecbyhand = Vec::new();
+
+        vecbyhand.push((5,0));
+        vecbyhand.push((3,0));
+        vecbyhand.push((4,1));
+
+        let mut vec_norm = normalize(&vec);
+        let mut vecbyhand_norm = normalize(&vecbyhand);
+        vec_norm.sort();
+        vecbyhand_norm.sort();
+
+
+        assert_eq!(vec_norm,vecbyhand_norm)
+    }
+
+    #[test]
+    fn board2_2(){
+        let mut cl = ChessLogic::new();
+        cl.all_empty(false);
+        cl.set_piece(false,Piece::k,2,4);
+        cl.set_piece(false,Piece::Q,3,2);
+        cl.set_piece(false,Piece::P,2,2);
+        cl.set_piece(false,Piece::K,4,5);
+        cl.set_piece(false,Piece::n,0,0);
+        cl.set_piece(false,Piece::R,0,5);
+
+        let mut vec= cl.get_legal_moves(false,2,4);
+        let mut vecbyhand = Vec::new();
+        cl.print_w_legal(false,&vec);
+        assert_eq!(vec,vecbyhand);
+    }
+
+    #[test]
+    fn cool_checkmate2(){
+        let mut cl = ChessLogic::new();
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::k,2,4);
+        cl.set_piece(true,Piece::P,2,3);
+        cl.set_piece(true,Piece::P,3,4);
+        cl.set_piece(true,Piece::B,4,2);
+        cl.set_piece(true,Piece::p,3,5);
+        cl.set_piece(true,Piece::Un,1,3);
+        
+        let mut vec= cl.get_legal_moves(true,2,4);
+        let mut vecbyhand = [(3,4)];
+        cl.print_w_legal(true,&vec);
+        assert_eq!(vec,vecbyhand);
+    }
+
+    #[test] 
+    fn chincough(){
+        let mut cl = ChessLogic::new();
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::K,0,0);
+        cl.set_piece(true,Piece::P,0,1);
+        cl.set_piece(true,Piece::P,1,0);
+        cl.set_piece(true,Piece::P,1,1);
+        cl.set_piece(true,Piece::n,1,2);
+
+        let mut vec= cl.get_legal_moves(true,0,0);
+        cl.print_w_legal(true,&vec);
+        assert_eq!(vec,Vec::new());
+        let mut vec2=cl.get_legal_moves(true,1,0);
+        cl.print_w_legal(true,&vec2);
+        assert_eq!(vec2,Vec::new());
+        let mut vec3=cl.get_legal_moves(true,0,1);
+        cl.print_w_legal(true,&vec3);
+        assert_eq!(vec3,Vec::new());
+
+
+    }
 }
