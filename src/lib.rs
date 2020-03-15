@@ -26,8 +26,12 @@ mod tests {
 
         vecbyhand.push((5,6));
         vecbyhand.push((5,4));
+        vecbyhand.push((5,5));
         vecbyhand.push((6,4));
-
+        vecbyhand.push((6,6));
+        vecbyhand.push((7,4));
+        vecbyhand.push((7,5));
+        vecbyhand.push((7,6));
         let mut vec_norm = normalize(&vec);
         let mut vecbyhand_norm = normalize(&vecbyhand);
         vec_norm.sort();
@@ -115,7 +119,7 @@ mod tests {
 
         let vec = cl.get_legal_moves(true,1,7);
         cl.print_w_legal(true,&vec);
-        assert_eq!(vec,Vec::new())
+        assert_eq!(vec,[(0, 6), (0, 7), (2, 6), (2, 7)])
 
     }
 
@@ -130,7 +134,7 @@ mod tests {
 
         let vec = cl.get_legal_moves(true,0,7);
         cl.print_w_legal(true,&vec);
-        assert_eq!(vec,Vec::new())
+        assert_eq!(vec,[(0,6)])
     }
 
     #[test]
@@ -144,7 +148,7 @@ mod tests {
 
         let vec = cl.get_legal_moves(true,7,4);
         cl.print_w_legal(true,&vec);
-        assert_eq!(vec,Vec::new())
+        assert_eq!(vec,[(6, 5)])
     }
 
     #[test]
@@ -286,7 +290,7 @@ mod tests {
         cl.set_piece(true,Piece::R,0,5);
 
         let mut vec= cl.get_legal_moves(true,2,4);
-        let mut vecbyhand = Vec::new();
+        let mut vecbyhand = [(1, 3), (1, 4), (1, 5), (2, 3), (2, 5), (3, 3), (3, 4), (3, 5)];
         cl.print_w_legal(true,&vec);
         assert_eq!(vec,vecbyhand);
     }
@@ -396,7 +400,7 @@ mod tests {
 
         let vec = cl.get_legal_moves(true,1,7);
         cl.print_w_legal(true,&vec);
-        assert_eq!(vec,[(0,7)]);
+        assert_eq!(vec,[(0, 6), (0, 7), (1, 6), (2, 6), (2, 7)]);
 
         let mut cl = ChessLogic::new();
         cl.all_empty(true);
@@ -406,7 +410,7 @@ mod tests {
         cl.set_piece(true,Piece::N,2,0);
 
         let vec = cl.get_legal_moves(true,0,0);
-        assert_eq!(vec,[]);
+        assert_eq!(vec,[(0, 1), (1, 0), (1, 1)]);
     }
 
     #[test]
@@ -470,6 +474,14 @@ mod tests {
 
         let mut vec= cl.get_legal_moves(false,2,4);
         let mut vecbyhand = Vec::new();
+        vecbyhand.push((1,3));
+        vecbyhand.push((1,4));
+        vecbyhand.push((1,5));
+        vecbyhand.push((2,3));
+        vecbyhand.push((2,5));
+        vecbyhand.push((3,3));
+        vecbyhand.push((3,4));
+        vecbyhand.push((3,5));
         cl.print_w_legal(false,&vec);
         assert_eq!(vec,vecbyhand);
     }
@@ -486,7 +498,7 @@ mod tests {
         cl.set_piece(true,Piece::Un,1,3);
         
         let mut vec= cl.get_legal_moves(true,2,4);
-        let mut vecbyhand = [(3,4)];
+        let mut vecbyhand = [(1, 4), (1, 5), (2, 3), (2, 5), (3, 3), (3, 4)];
         cl.print_w_legal(true,&vec);
         assert_eq!(vec,vecbyhand);
     }

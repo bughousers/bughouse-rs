@@ -894,7 +894,8 @@ impl ChessLogic {
                 if self.valid(i_off+ix,j_off+jx) && !(*i_off==0 && *j_off==0){
                     let mut ic = i_off+ix;
                     let mut jc = j_off+jx;
-                    if !self.is_attacked(board1,wayt,ic as usize,jc as usize) 
+                    //if !self.is_attacked(board1,wayt,ic as usize,jc as usize)  --keep this in case we want legal moves only
+                    if true 
                     {
                         if board1 {
                             if self.chess_board1.board[ic as usize][jc as usize] == Piece::E 
