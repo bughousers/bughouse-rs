@@ -530,11 +530,17 @@ mod tests {
     #[test]
     fn is_move_legal(){
         let mut cl = ChessLogic::new();
+        cl.white_active_1 = false;
         assert!(cl.movemaker(true,1,1,3,1));
+        cl.white_active_1 = false;
         assert!(cl.movemaker(true,1,7,3,7));
+        cl.white_active_1 = false;
         assert!(cl.movemaker(true,0,1,2,2));
+        cl.white_active_1 = false;
         assert!(!cl.movemaker(true,1,1,4,1));
+        cl.white_active_1 = false;
         assert!(!cl.movemaker(true,0,0,1,0));
+        cl.white_active_1 = false;
         assert!(!cl.movemaker(true,0,0,2,0));
     }
 
@@ -546,11 +552,13 @@ mod tests {
         cl.set_piece(true,Piece::r,4,0);
         cl.set_piece(true,Piece::k,5,0);
         //is allowed bcs we are playing tandem
+        cl.white_active_1 = false;
         assert!(cl.movemaker(true,4,0,4,7));
         cl.all_empty(true);
         cl.set_piece(true,Piece::R,0,0);
         cl.set_piece(true,Piece::r,4,0);
         cl.set_piece(true,Piece::k,5,0);
+        cl.white_active_1 = false;
         assert!(cl.movemaker(true,5,0,5,1));
         let vec = cl.get_legal_moves(true,5,0);
         cl.print_w_legal(true,&vec);
@@ -558,11 +566,13 @@ mod tests {
         cl.set_piece(true,Piece::R,0,0);
         cl.set_piece(true,Piece::r,4,0);
         cl.set_piece(true,Piece::k,5,0);
+        cl.white_active_1 = false;
         assert!(cl.movemaker(true,5,0,6,1));
         cl.all_empty(true);
         cl.set_piece(true,Piece::R,0,0);
         cl.set_piece(true,Piece::r,4,0);
         cl.set_piece(true,Piece::k,5,0);
+        cl.white_active_1 = false;
         assert!(!cl.movemaker(true,5,0,4,0));
     }
 
@@ -573,15 +583,18 @@ mod tests {
         cl.all_empty(true);
         cl.set_piece(true,Piece::R,0,0);
         cl.set_piece(true,Piece::r,4,0);
+        cl.white_active_1 = false; 
         assert!(cl.movemaker(true,4,0,0,0));
         assert!(cl.get_captured_piece(false,true,1)==1);
         cl.set_piece(true,Piece::Q,0,7);
         let vec = cl.get_legal_moves(true,0,0);
         cl.print_w_legal(true,&vec);
+        cl.white_active_1 = false; 
         assert!(cl.movemaker(true,0,0,0,7));
         
         assert!(cl.get_captured_piece(false,true,4)==1);
         cl.set_piece(true,Piece::Q,7,7);
+        cl.white_active_1 = false; 
         assert!(cl.movemaker(true,0,7,7,7));
         assert!(cl.get_captured_piece(false,true,4)==2);
         cl.set_piece(true,Piece::K,6,7);
@@ -727,7 +740,7 @@ mod tests {
         cl.print_w_legal(false,&vec);
         assert!(contains(&vec,(0,6)));
         assert!(contains(&vec,(0,2)));
-
+        cl.white_active_2 = false;
         cl.movemaker(false,0,4,0,2);
         assert!(cl.chess_board2.board[0][0]==Piece::E);
         assert!(cl.chess_board2.board[0][4]==Piece::E);
@@ -759,6 +772,7 @@ mod tests {
         cl.all_empty(false);
         cl.set_piece(false,Piece::p,6,7);
         cl.upgrade_to2 = Piece::r;
+        cl.white_active_2 = false;
         cl.movemaker(false,6,7,7,7);
         cl.print(false);
         assert!(cl.chess_board2.board[7][7]==Piece::Ur);

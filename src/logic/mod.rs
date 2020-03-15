@@ -10,6 +10,8 @@ pub struct ChessLogic {
     //if it has moved
     pawn_in_last_turn_b1: Option<(usize,usize)>,
     pawn_in_last_turn_b2: Option<(usize,usize)>,
+    pub white_active_1: bool,
+    pub white_active_2: bool,
     //boardX_color_capture ==
     //board1 or 2, the captured piece has color <color>
     //the order is P-R-N-B-Q
@@ -31,6 +33,13 @@ impl ChessLogic {
             println!("------------------------");
         }
 
+    }
+
+    pub fn get_white_active(&self, board1:bool) -> bool{
+        match board1 {
+            true => self.white_active_1,
+            false => self.white_active_2,
+        }
     }
 
     pub fn get_captured_piece(&self, board1:bool,white:bool, i:usize) -> u8 {
@@ -112,6 +121,8 @@ impl ChessLogic {
             pawn_in_last_turn_b2: None,
             upgrade_to1: Piece::E,
             upgrade_to2: Piece::E,
+            white_active_1: true,
+            white_active_2: true,
             board1_white_capture: [0;5],
             board1_black_capture: [0;5],
             board2_white_capture: [0;5],
@@ -1088,6 +1099,10 @@ impl ChessLogic {
                 match self.chess_board1.board[i_old][j_old] {
                     Piece::K => 
                     {
+                        if !self.white_active_1 {
+                            return false 
+                        }else{
+                      
                         if i_old==7 && j_old==4 && i== 7 && (j==6 || j==2)
                         {
                             //we are going castle
@@ -1101,12 +1116,18 @@ impl ChessLogic {
                                 self.chess_board1.board[7][0] = Piece::E;
                             }
                             self.chess_board1.white_k_moved = true;
+                            self.white_active_1 = !self.white_active_1;
                             return true 
                         }
                         self.chess_board1.white_k_moved = true;
+                        }
                     },
                     Piece::k => 
                     {
+                        if self.white_active_1 {
+                            return false 
+                        }else{
+                          
                         if i_old==0 && j_old==4
                         && i== 0 && (j==6 || j==2)
                         {
@@ -1120,45 +1141,70 @@ impl ChessLogic {
                                 self.chess_board1.board[i][j+1] = Piece::R;
                                 self.chess_board1.board[0][0] = Piece::E;
                             }
-                            self.chess_board1.white_k_moved = true;
+                            self.chess_board1.black_k_moved = true;
+                            self.white_active_1 = !self.white_active_1;
                             return true 
                         }
-                        
+                     
                         self.chess_board1.black_k_moved = true;
+                        }
                     },
                     Piece::P => 
                     {
+                        if !self.white_active_1 {
+                            return false
+                        }else{
                         if i==0 {
                             match self.upgrade_to1 {
                                 Piece::Q => { self.upgrade_to1 = Piece::E; self.chess_board1.board[i][j] = Piece::UQ;
-                                    self.chess_board1.board[i_old][j_old] = Piece::E; return true},
+                                    self.chess_board1.board[i_old][j_old] = Piece::E; 
+                                    self.white_active_1 = !self.white_active_1;return true},
                                 Piece::R => { self.upgrade_to1 = Piece::E; self.chess_board1.board[i][j] = Piece::UR;
-                                    self.chess_board1.board[i_old][j_old] = Piece::E;return true},
+                                    self.chess_board1.board[i_old][j_old] = Piece::E;
+                                    self.white_active_1 = !self.white_active_1;return true},
                                 Piece::B => { self.upgrade_to1 = Piece::E;self.chess_board1.board[i][j] = Piece::UB;
-                                    self.chess_board1.board[i_old][j_old] = Piece::E;return true},
+                                    self.chess_board1.board[i_old][j_old] = Piece::E;
+                                    self.white_active_1 = !self.white_active_1;return true},
                                 Piece::N => { self.upgrade_to1 = Piece::E;self.chess_board1.board[i][j] = Piece::UN;
-                                    self.chess_board1.board[i_old][j_old] = Piece::E;return true },
+                                    self.chess_board1.board[i_old][j_old] = Piece::E;
+                                    self.white_active_1 = !self.white_active_1;return true },
                                 _ =>  {println!("Precondition not fulfilled!"); return false},
                            } 
+                        }
                         }
                     },
                     Piece::p => 
                     {
+                        if self.white_active_1 {
+                            return false
+                        }else {
                        if i==7 {
                             match self.upgrade_to1 {
                                 Piece::q => {self.upgrade_to1 = Piece::E;self.chess_board1.board[i][j] = Piece::Uq;
-                                self.chess_board1.board[i_old][j_old] = Piece::E; return true},
+                                self.chess_board1.board[i_old][j_old] = Piece::E;
+                                self.white_active_1 = !self.white_active_1; return true},
                                 Piece::r => {self.upgrade_to1 = Piece::E;self.chess_board1.board[i][j] = Piece::Ur; 
-                                    self.chess_board1.board[i_old][j_old] = Piece::E;return true},
+                                    self.chess_board1.board[i_old][j_old] = Piece::E;
+                                    self.white_active_1 = !self.white_active_1;return true},
                                 Piece::b => {self.upgrade_to1 = Piece::E;self.chess_board1.board[i][j] = Piece::Ub; 
-                                    self.chess_board1.board[i_old][j_old] = Piece::E;return true},
+                                    self.chess_board1.board[i_old][j_old] = Piece::E;
+                                    self.white_active_1 = !self.white_active_1;return true},
                                 Piece::n => {self.upgrade_to1 = Piece::E;self.chess_board1.board[i][j] = Piece::Un;
-                                    self.chess_board1.board[i_old][j_old] = Piece::E; return true},
+                                    self.chess_board1.board[i_old][j_old] = Piece::E; 
+                                    self.white_active_1 = !self.white_active_1;return true},
                                 _ =>  {println!("Precondition not fulfilled!"); return false},
                             } 
                        }
+                        }
                     },
                     _ => {},
+                }
+
+                if !(( self.white_active_1 && self.is_white(board1,i_old,j_old)) 
+                || (!self.white_active_1 && !self.is_white(board1,i_old,j_old))) {
+                    //not your turn!!!
+                    println!("Siktir git hamlen degil!");
+                    return false
                 }
 
                 let tmp = self.chess_board1.board[i][j];
@@ -1179,11 +1225,15 @@ impl ChessLogic {
                 }
                 self.chess_board1.board[i][j]=self.chess_board1.board[i_old][j_old];
                 self.chess_board1.board[i_old][j_old]=Piece::E;
-                true
+                self.white_active_1 = !self.white_active_1;
+                return true
             }else{
                 match self.chess_board2.board[i_old][j_old] {
                     Piece::K => 
                     {
+                        if !self.white_active_2 {
+                            return false
+                        }else{
                         if i_old==7 && j_old==4
                         && i== 7 && (j==6 || j==2)
                         {
@@ -1198,12 +1248,17 @@ impl ChessLogic {
                                 self.chess_board2.board[7][0] = Piece::E;
                             }
                             self.chess_board2.white_k_moved = true;
+                            self.white_active_2 = !self.white_active_2;
                             return true 
                         }
                         self.chess_board2.white_k_moved = true;
+                        }
                     },
                     Piece::k => 
                     {
+                        if self.white_active_2 {
+                            return false
+                        }else{
                         if i_old==0 && j_old==4
                         && i== 0 && (j==6 || j==2)
                         {
@@ -1217,46 +1272,72 @@ impl ChessLogic {
                                 self.chess_board2.board[i][j+1] = Piece::R;
                                 self.chess_board2.board[0][0] = Piece::E;
                             }
-                            self.chess_board2.white_k_moved = true;
+                            self.chess_board2.black_k_moved = true;
+                            self.white_active_2 = !self.white_active_2;
                             return true 
                         }
                         
                         self.chess_board2.black_k_moved = true;
+                        }
                     },
                     Piece::P => 
                     {
+                        if !self.white_active_2 {
+                            return false
+                        }else{
                         if i==0 {
                             match self.upgrade_to2 {
                                 Piece::Q => { self.upgrade_to2 = Piece::E;self.chess_board2.board[i][j] = Piece::UQ;
-                                    self.chess_board2.board[i_old][j_old] = Piece::E;return true},
+                                    self.chess_board2.board[i_old][j_old] = Piece::E;
+                                    self.white_active_2 = !self.white_active_2;return true},
                                 Piece::R => { self.upgrade_to2 = Piece::E;self.chess_board2.board[i][j] = Piece::UR;
-                                    self.chess_board2.board[i_old][j_old] = Piece::E;return true},
+                                    self.chess_board2.board[i_old][j_old] = Piece::E;
+                                    self.white_active_2 = !self.white_active_2;return true},
                                 Piece::B => { self.upgrade_to2 = Piece::E;self.chess_board2.board[i][j] = Piece::UB;
-                                    self.chess_board2.board[i_old][j_old] = Piece::E;return true},
+                                    self.chess_board2.board[i_old][j_old] = Piece::E;
+                                    self.white_active_2 = !self.white_active_2;return true},
                                 Piece::N => { self.upgrade_to2 = Piece::E;self.chess_board2.board[i][j] = Piece::UN;
-                                    self.chess_board2.board[i_old][j_old] = Piece::E;return true },
+                                    self.chess_board2.board[i_old][j_old] = Piece::E;
+                                    self.white_active_2 = !self.white_active_2;return true },
                                 _ =>  {println!("Precondition not fulfilled!"); return false},
                            } 
+                        }
                         }
                     },
                     Piece::p => 
                     {
+                        if self.white_active_2 {
+                            return false
+                        }else{
                        if i==7 {
                             match self.upgrade_to2 {
                                 Piece::q => { self.upgrade_to2 = Piece::E;self.chess_board2.board[i][j] = Piece::Uq;
-                                self.chess_board2.board[i_old][j_old] = Piece::E; return true},
+                                self.chess_board2.board[i_old][j_old] = Piece::E; 
+                                self.white_active_2 = !self.white_active_2;return true},
                                 Piece::r => { self.upgrade_to2 = Piece::E;self.chess_board2.board[i][j] = Piece::Ur; 
-                                    self.chess_board2.board[i_old][j_old] = Piece::E;return true},
+                                    self.chess_board2.board[i_old][j_old] = Piece::E;
+                                    self.white_active_2 = !self.white_active_2;return true},
                                 Piece::b => { self.upgrade_to2 = Piece::E;self.chess_board2.board[i][j] = Piece::Ub; 
-                                    self.chess_board2.board[i_old][j_old] = Piece::E;return true},
+                                    self.chess_board2.board[i_old][j_old] = Piece::E;
+                                    self.white_active_2 = !self.white_active_2;return true},
                                 Piece::n => { self.upgrade_to2 = Piece::E;self.chess_board2.board[i][j] = Piece::Un;
-                                    self.chess_board2.board[i_old][j_old] = Piece::E; return true},
+                                    self.chess_board2.board[i_old][j_old] = Piece::E; 
+                                    self.white_active_2 = !self.white_active_2;return true},
                                 _ =>  {println!("Precondition not fulfilled!"); return false},
                             } 
                        }
+                    }
                     },
                     _ => {},
                 }
+
+                if !( (self.white_active_2 && self.is_white(board1,i_old,j_old)) 
+                || (!self.white_active_2 && !self.is_white(board1,i_old,j_old))) {
+                    //not your turn!!!
+                    println!("Siktir git hamlen degil!");
+                    return false
+                }
+
 
                 let tmp = self.chess_board2.board[i][j];
                 if tmp==Piece::K || tmp==Piece::k {
@@ -1274,7 +1355,8 @@ impl ChessLogic {
                 }
                 self.chess_board2.board[i][j]=self.chess_board2.board[i_old][j_old];
                 self.chess_board2.board[i_old][j_old]=Piece::E;
-                true
+                self.white_active_2 = !self.white_active_2;
+                return true
             }
         }else{
             println!("Move not legal!");
