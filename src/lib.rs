@@ -326,7 +326,7 @@ mod tests {
         cl.all_empty(true);
         cl.set_piece(true,Piece::p,4,0);
         cl.set_piece(true,Piece::P,4,1);
-        cl.pawn_in_last_turn = Some((4,1));
+        cl.set_pawn_in_last_turn(true, Some((4,1)));
         let mut vec = cl.get_legal_moves(true,4,0);
 
         let mut vecbyhand = Vec::new();
@@ -337,7 +337,7 @@ mod tests {
         cl.all_empty(true);
         cl.set_piece(true,Piece::p,4,7);
         cl.set_piece(true,Piece::P,4,6);
-        cl.pawn_in_last_turn = Some((4,6));
+        cl.set_pawn_in_last_turn(true, Some((4,6)));
         vec = cl.get_legal_moves(true,4,7);
 
         vecbyhand = Vec::new();
@@ -348,7 +348,7 @@ mod tests {
         cl.all_empty(true);
         cl.set_piece(true,Piece::p,4,6);
         cl.set_piece(true,Piece::P,4,7);
-        cl.pawn_in_last_turn = Some((4,7));
+        cl.set_pawn_in_last_turn(true, Some((4,7)));
         vec = cl.get_legal_moves(true,4,6);
 
         vecbyhand = Vec::new();
@@ -359,7 +359,7 @@ mod tests {
         cl.all_empty(true);
         cl.set_piece(true,Piece::p,3,6);
         cl.set_piece(true,Piece::P,3,7);
-        cl.pawn_in_last_turn = Some((3,6));
+        cl.set_pawn_in_last_turn(true,Some((3,6)));
         vec = cl.get_legal_moves(true,3,7);
 
         vecbyhand = Vec::new();
@@ -370,7 +370,7 @@ mod tests {
         cl.all_empty(true);
         cl.set_piece(true,Piece::p,3,0);
         cl.set_piece(true,Piece::P,3,1);
-        cl.pawn_in_last_turn = Some((3,0));
+        cl.set_pawn_in_last_turn(true,Some((3,0)));
         vec = cl.get_legal_moves(true,3,1);
 
         vecbyhand = Vec::new();
@@ -381,7 +381,7 @@ mod tests {
         cl.all_empty(true);
         cl.set_piece(true,Piece::p,3,0);
         cl.set_piece(true,Piece::P,3,1);
-        cl.pawn_in_last_turn = None;
+        cl.set_pawn_in_last_turn(true,None);
         vec = cl.get_legal_moves(true,3,1);
 
         vecbyhand = Vec::new();
@@ -571,19 +571,18 @@ mod tests {
         cl.set_piece(true,Piece::R,0,0);
         cl.set_piece(true,Piece::r,4,0);
         assert!(cl.movemaker(true,4,0,0,0));
-        assert!(cl.board2_white_capture[1]==1);
+        assert!(cl.get_captured_piece(false,true,1)==1);
         cl.set_piece(true,Piece::Q,0,7);
         let vec = cl.get_legal_moves(true,0,0);
         cl.print_w_legal(true,&vec);
         assert!(cl.movemaker(true,0,0,0,7));
-        assert!(cl.board2_white_capture[4]==1);
+        
+        assert!(cl.get_captured_piece(false,true,4)==1);
         cl.set_piece(true,Piece::Q,7,7);
         assert!(cl.movemaker(true,0,7,7,7));
-        assert!(cl.board2_white_capture[4]==2);
+        assert!(cl.get_captured_piece(false,true,4)==2);
         cl.set_piece(true,Piece::K,6,7);
         cl.movemaker(true,6,7,7,7);
-        assert!(cl.board2_black_capture[1]==1);
-
     }
 
     #[test]
@@ -733,6 +732,47 @@ mod tests {
         assert!(cl.chess_board2.board[0][3]==Piece::R);
     }
 
+    #[test]
+    fn up(){
+        let mut cl = ChessLogic::new();
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::Ur,0,7);
+        let vec = cl.get_legal_moves(true,0,7);
+        cl.print_w_legal(true,&vec);
+        assert!(!contains(&vec,(1,1)));
+    }
+
+    #[test]
+    fn promotion() {
+        let mut cl = ChessLogic::new();
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::P,1,7);
+        cl.upgrade_to1 = Piece::Q;
+        cl.movemaker(true,1,7,0,7);
+        cl.print(true);
+        assert!(cl.chess_board1.board[0][7]==Piece::UQ);
+
+        cl.all_empty(false);
+        cl.set_piece(false,Piece::p,6,7);
+        cl.upgrade_to2 = Piece::r;
+        cl.movemaker(false,6,7,7,7);
+        cl.print(false);
+        assert!(cl.chess_board2.board[7][7]==Piece::Ur);
+
+        let mut cl = ChessLogic::new();
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::P,1,0);
+        cl.upgrade_to1 = Piece::N;
+        cl.movemaker(true,1,0,0,0);
+        cl.print(true);
+        assert!(cl.chess_board1.board[0][0]==Piece::UN);
+    }
+
+    #[test]
+    fn xfen() {
+        assert!(true,gen_xfen())
+    }
+
 
     pub fn contains(vec: &Vec<(usize,usize)>,(i,j): (usize,usize)) -> bool {
         for (a,b) in vec.iter() {
@@ -742,5 +782,7 @@ mod tests {
         }
         return false
     }
+
+
 
 }
