@@ -9,6 +9,13 @@ pub struct ChessLogic {
     //tuple of start point offset and if bool to indicate 
     //if it has moved
     pub pawn_in_last_turn: Option<(usize,usize)>,
+    //boardX_color_capture ==
+    //board1 or 2, the captured piece has color <color>
+    //the order is P-R-N-B-Q
+    pub board1_white_capture: [u8;5],
+    pub board1_black_capture: [u8;5],
+    pub board2_white_capture: [u8;5],
+    pub board2_black_capture: [u8;5],
 }
 
 impl ChessLogic {
@@ -68,6 +75,10 @@ impl ChessLogic {
             chess_board1: ChessBoard::new(),
             chess_board2: ChessBoard::new(),
             pawn_in_last_turn: None,
+            board1_white_capture: [0;5],
+            board1_black_capture: [0;5],
+            board2_white_capture: [0;5],
+            board2_black_capture: [0;5],
         }
     }
     pub fn get_legal_moves(&mut self,board1:bool, old_i:usize, old_j:usize)
@@ -126,6 +137,7 @@ impl ChessLogic {
                     },
                     (0,_) => {
                        let mut vec =  Vec::new();
+                       println!("This indicates pawn upgrade malfunction");
                        vec
                     },
                     (_,_) => {
@@ -194,6 +206,7 @@ impl ChessLogic {
                     },
                     (7,_) => {
                         let mut vec = Vec::new();
+                        println!("This indicates pawn upgrade malfunction");
                         vec
                     },  
                     (_,_) => {
@@ -907,6 +920,9 @@ impl ChessLogic {
         vec
     }
 
+    //rly important detail
+    //in tandem you can move your pinned piece, then the enemy can capture 
+    //your rook
     pub fn legality_check(&mut self, board1:bool, i_old:usize,j_old:usize,i:usize,j:usize) -> bool{
         match self.chess_board1.board[i_old][j_old] {
             Piece::E | Piece::L => false,
@@ -922,13 +938,45 @@ impl ChessLogic {
         }
     }
 
+
+    //do not forget the side effects while testing
     pub fn movemaker(&mut self, board1:bool, i_old:usize,j_old:usize,i:usize,j:usize) -> bool{
         if self.legality_check(board1,i_old,j_old,i,j) {
             if board1 {
-                //self.chess_board1.board[i_old][j_old] = 
+                let tmp = self.chess_board1.board[i][j];
+                if tmp==Piece::K || tmp==Piece::k {
+                    self.finish_up();
+                }
+                match self.box_index(tmp) {
+                    None => {}, //nothing to di
+                    Some(a) => {
+                        if self.is_white(board1,i,j) {
+                            self.board2_white_capture[a]+=1;
+                        }else{
+                            self.board2_black_capture[a]+=1;
+                        }
+                    },
+                }
+                self.chess_board1.board[i][j]=self.chess_board1.board[i_old][j_old];
+                self.chess_board1.board[i_old][j_old]=Piece::E;
                 true
             }else{
-
+                let tmp = self.chess_board2.board[i][j];
+                if tmp==Piece::K || tmp==Piece::k {
+                    self.finish_up();
+                }
+                match self.box_index(tmp) {
+                    None => {}, //nothing to di
+                    Some(a) => {
+                        if self.is_white(board1,i,j) {
+                            self.board1_white_capture[a]+=1;
+                        }else{
+                            self.board1_black_capture[a]+=1;
+                        }
+                    },
+                }
+                self.chess_board2.board[i][j]=self.chess_board2.board[i_old][j_old];
+                self.chess_board2.board[i_old][j_old]=Piece::E;
                 true
             }
         }else{
@@ -937,7 +985,22 @@ impl ChessLogic {
         }
     }
 
+    pub fn box_index(&self, piece:Piece) -> Option<usize> {
+        //P-R-N-B-Q
+        match piece {
+            Piece::P | Piece::p  => Some(0),
+            Piece::K | Piece::k | Piece::L  | Piece::E => None ,
+            Piece::N | Piece::n | Piece::Un | Piece::UN => Some(2),
+            Piece::R | Piece::r | Piece::Ur | Piece::UR => Some(1),
+            Piece::B | Piece::b | Piece::Ub | Piece::UB => Some(3),
+            Piece::Q | Piece::q | Piece::Uq | Piece::UQ => Some(4),
 
+        }
+    }
+
+    fn finish_up(&self){
+        println!("This is a stub, todo: game done");
+    }
 
 }
 
