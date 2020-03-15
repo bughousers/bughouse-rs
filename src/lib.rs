@@ -1,12 +1,15 @@
 #![allow(warnings)] 
 mod logic;
 mod parse;
+mod xfen;
 
 #[cfg(test)]
 mod tests {
     use crate::logic::board::Piece;
     use crate::logic::ChessLogic;
     use crate::parse::parser;
+    use crate::xfen::xfen::*;
+
 
     #[test]
     fn trivial() {
@@ -770,6 +773,13 @@ mod tests {
         assert!(cl.chess_board1.board[0][0]==Piece::UN);
         assert!(cl.upgrade_to1==Piece::E);
     }
+
+    
+    fn trivial_xfen(){
+        let cl =ChessLogic::new();
+        assert!(gen_xfen(&cl));
+    }
+    
 
     pub fn contains(vec: &Vec<(usize,usize)>,(i,j): (usize,usize)) -> bool {
         for (a,b) in vec.iter() {
