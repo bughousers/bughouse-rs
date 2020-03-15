@@ -1,10 +1,12 @@
 #![allow(warnings)] 
 mod logic;
+mod parse;
 
 #[cfg(test)]
 mod tests {
     use crate::logic::board::Piece;
     use crate::logic::ChessLogic;
+    use crate::parse::parser;
 
     #[test]
     fn trivial() {
@@ -569,6 +571,19 @@ mod tests {
         cl.set_piece(true,Piece::K,6,7);
         cl.movemaker(true,6,7,7,7);
         assert!(cl.board2_black_capture[1]==1);
+
+    }
+
+    #[test]
+    fn parse(){
+        let mut vec = parser::parse(&String::from("e2-e4"));
+        assert_eq!([6,4,4,4],vec);
+        vec = parser::parse(&String::from("a1-a3"));
+        assert_eq!([7,0,5,0],vec);
+        vec = parser::parse(&String::from("d2-d4"));
+        assert_eq!([6,3,4,3],vec);
+        vec = parser::parse(&String::from("h8-h1"));
+        assert_eq!([0,7,7,7],vec);
 
     }
 
