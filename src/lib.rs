@@ -508,7 +508,68 @@ mod tests {
         let mut vec3=cl.get_legal_moves(true,0,1);
         cl.print_w_legal(true,&vec3);
         assert_eq!(vec3,Vec::new());
+    }
 
+    #[test]
+    fn is_move_legal(){
+        let mut cl = ChessLogic::new();
+        assert!(cl.movemaker(true,1,1,3,1));
+        assert!(cl.movemaker(true,1,7,3,7));
+        assert!(cl.movemaker(true,0,1,2,2));
+        assert!(!cl.movemaker(true,1,1,4,1));
+        assert!(!cl.movemaker(true,0,0,1,0));
+        assert!(!cl.movemaker(true,0,0,2,0));
+    }
+
+    #[test]
+    fn pinned_piece(){
+        let mut cl = ChessLogic::new();
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::R,0,0);
+        cl.set_piece(true,Piece::r,4,0);
+        cl.set_piece(true,Piece::k,5,0);
+        //is allowed bcs we are playing tandem
+        assert!(cl.movemaker(true,4,0,4,7));
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::R,0,0);
+        cl.set_piece(true,Piece::r,4,0);
+        cl.set_piece(true,Piece::k,5,0);
+        assert!(cl.movemaker(true,5,0,5,1));
+        let vec = cl.get_legal_moves(true,5,0);
+        cl.print_w_legal(true,&vec);
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::R,0,0);
+        cl.set_piece(true,Piece::r,4,0);
+        cl.set_piece(true,Piece::k,5,0);
+        assert!(cl.movemaker(true,5,0,6,1));
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::R,0,0);
+        cl.set_piece(true,Piece::r,4,0);
+        cl.set_piece(true,Piece::k,5,0);
+        assert!(!cl.movemaker(true,5,0,4,0));
+    }
+
+    #[test]
+    fn capture_piece(){
+         //the order is P-R-N-B-Q
+        let mut cl = ChessLogic::new();
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::R,0,0);
+        cl.set_piece(true,Piece::r,4,0);
+        assert!(cl.movemaker(true,4,0,0,0));
+        assert!(cl.board2_white_capture[1]==1);
+        cl.set_piece(true,Piece::Q,0,7);
+        let vec = cl.get_legal_moves(true,0,0);
+        cl.print_w_legal(true,&vec);
+        assert!(cl.movemaker(true,0,0,0,7));
+        assert!(cl.board2_white_capture[4]==1);
+        cl.set_piece(true,Piece::Q,7,7);
+        assert!(cl.movemaker(true,0,7,7,7));
+        assert!(cl.board2_white_capture[4]==2);
+        cl.set_piece(true,Piece::K,6,7);
+        cl.movemaker(true,6,7,7,7);
+        assert!(cl.board2_black_capture[1]==1);
 
     }
+
 }
