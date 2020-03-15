@@ -1,20 +1,60 @@
 pub mod parser {
+    //parse method only works if the input is correct
     pub fn parse(input: &String) -> [usize; 4] {
         let mut rt = [8;4];
-        let mut ct = 0;
-        for c in input.chars() {
-            println!("{}",c);
-            match c {
-                'L' | 'l' => {rt[ct] = 8; ct+=1;},
-                '0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'=> {
-                    match c.to_digit(10) {
-                        None => {rt[ct] = 10 as usize; ct+=1;},
-                        Some(x) => {rt[ct] = x as usize; ct+=1;},
+        let mut rtc = 1;
+        
+        
+        let mut splt = input.split("-");
+        for s in splt {
+            let mut f = true;
+            for c in s.chars() {
+                if c!='\n' {
+                    if f {
+                        rt[rtc] = char2ind(c);
+                        rtc -=1;
+                        f = false;
+                    }else{
+                        rt[rtc] = line2line(c);
+                        rtc +=3;
                     }
-                },
-                _ => {},
+                }
+               
             }
+
         }
+        //for i in rt.iter(){
+        //    println!("{}",i);
+        //}
         rt
     }
+
+    pub fn char2ind(a: char) -> usize {
+        match a {
+            'a' | 'A' => 0,
+            'b' | 'B'  => 1,
+            'c' | 'C'  => 2,
+            'd' | 'D'  => 3,
+            'e' | 'E'  => 4,
+            'f' | 'F'  => 5,
+            'g' | 'G'  => 6,
+            'h' | 'H'  => 7,
+            _ => {println!("Nonlegal input, char2ind"); 666},
+        }
+    }
+
+    pub fn line2line(a: char) -> usize {
+        match a {
+            '1' => 7,
+            '2' => 6,
+            '3' => 5,
+            '4' => 4,
+            '5' => 3,
+            '6' => 2,
+            '7' => 1,
+            '8' => 0,
+            _ => {println!("Nonlegal input, char2ind"); 666},
+        }
+    }
+
 }

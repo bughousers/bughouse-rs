@@ -55,22 +55,7 @@ fn main() {
             Err(error) => println!("error: {}", error),
         }
 
-        for i in input_casted.iter(){
-            print!("{}, ",i);
-            print!("\n");
-        }
-
-        if input_casted[0] == 8 {
-            let mut vt = chess_logic.get_legal_moves(true,input_casted[1],input_casted[2]);
-           chess_logic.print_w_legal(true, &vt);
-        }else{
-            let pic = chess_logic.chess_board1.board[input_casted[0]][input_casted[1]];
-            chess_logic.chess_board1.board[input_casted[0]][input_casted[1]]=Piece::E;
-            chess_logic.chess_board1.board[input_casted[2]][input_casted[3]]=pic;
-            
-            let mut v = chess_logic.get_legal_moves(true,input_casted[2],input_casted[3]);
-            chess_logic.print_w_legal(true,&v);
-        }
+      
     }
 
 }
