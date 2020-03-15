@@ -751,6 +751,7 @@ mod tests {
         cl.movemaker(true,1,7,0,7);
         cl.print(true);
         assert!(cl.chess_board1.board[0][7]==Piece::UQ);
+        assert!(cl.upgrade_to1==Piece::E);
 
         cl.all_empty(false);
         cl.set_piece(false,Piece::p,6,7);
@@ -758,6 +759,7 @@ mod tests {
         cl.movemaker(false,6,7,7,7);
         cl.print(false);
         assert!(cl.chess_board2.board[7][7]==Piece::Ur);
+        assert!(cl.upgrade_to2==Piece::E);
 
         let mut cl = ChessLogic::new();
         cl.all_empty(true);
@@ -766,13 +768,8 @@ mod tests {
         cl.movemaker(true,1,0,0,0);
         cl.print(true);
         assert!(cl.chess_board1.board[0][0]==Piece::UN);
+        assert!(cl.upgrade_to1==Piece::E);
     }
-
-    #[test]
-    fn xfen() {
-        assert!(true,gen_xfen())
-    }
-
 
     pub fn contains(vec: &Vec<(usize,usize)>,(i,j): (usize,usize)) -> bool {
         for (a,b) in vec.iter() {

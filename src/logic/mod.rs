@@ -1130,13 +1130,13 @@ impl ChessLogic {
                     {
                         if i==0 {
                             match self.upgrade_to1 {
-                                Piece::Q => {self.chess_board1.board[i][j] = Piece::UQ;
+                                Piece::Q => { self.upgrade_to1 = Piece::E; self.chess_board1.board[i][j] = Piece::UQ;
+                                    self.chess_board1.board[i_old][j_old] = Piece::E; return true},
+                                Piece::R => { self.upgrade_to1 = Piece::E; self.chess_board1.board[i][j] = Piece::UR;
                                     self.chess_board1.board[i_old][j_old] = Piece::E;return true},
-                                Piece::R => {self.chess_board1.board[i][j] = Piece::UR;
+                                Piece::B => { self.upgrade_to1 = Piece::E;self.chess_board1.board[i][j] = Piece::UB;
                                     self.chess_board1.board[i_old][j_old] = Piece::E;return true},
-                                Piece::B => {self.chess_board1.board[i][j] = Piece::UB;
-                                    self.chess_board1.board[i_old][j_old] = Piece::E;return true},
-                                Piece::N => {self.chess_board1.board[i][j] = Piece::UN;
+                                Piece::N => { self.upgrade_to1 = Piece::E;self.chess_board1.board[i][j] = Piece::UN;
                                     self.chess_board1.board[i_old][j_old] = Piece::E;return true },
                                 _ =>  {println!("Precondition not fulfilled!"); return false},
                            } 
@@ -1146,13 +1146,13 @@ impl ChessLogic {
                     {
                        if i==7 {
                             match self.upgrade_to1 {
-                                Piece::q => {self.chess_board1.board[i][j] = Piece::Uq;
+                                Piece::q => {self.upgrade_to1 = Piece::E;self.chess_board1.board[i][j] = Piece::Uq;
                                 self.chess_board1.board[i_old][j_old] = Piece::E; return true},
-                                Piece::r => {self.chess_board1.board[i][j] = Piece::Ur; 
+                                Piece::r => {self.upgrade_to1 = Piece::E;self.chess_board1.board[i][j] = Piece::Ur; 
                                     self.chess_board1.board[i_old][j_old] = Piece::E;return true},
-                                Piece::b => {self.chess_board1.board[i][j] = Piece::Ub; 
+                                Piece::b => {self.upgrade_to1 = Piece::E;self.chess_board1.board[i][j] = Piece::Ub; 
                                     self.chess_board1.board[i_old][j_old] = Piece::E;return true},
-                                Piece::n => {self.chess_board1.board[i][j] = Piece::Un;
+                                Piece::n => {self.upgrade_to1 = Piece::E;self.chess_board1.board[i][j] = Piece::Un;
                                     self.chess_board1.board[i_old][j_old] = Piece::E; return true},
                                 _ =>  {println!("Precondition not fulfilled!"); return false},
                             } 
@@ -1227,13 +1227,13 @@ impl ChessLogic {
                     {
                         if i==0 {
                             match self.upgrade_to2 {
-                                Piece::Q => {self.chess_board2.board[i][j] = Piece::UQ;
+                                Piece::Q => { self.upgrade_to2 = Piece::E;self.chess_board2.board[i][j] = Piece::UQ;
                                     self.chess_board2.board[i_old][j_old] = Piece::E;return true},
-                                Piece::R => {self.chess_board2.board[i][j] = Piece::UR;
+                                Piece::R => { self.upgrade_to2 = Piece::E;self.chess_board2.board[i][j] = Piece::UR;
                                     self.chess_board2.board[i_old][j_old] = Piece::E;return true},
-                                Piece::B => {self.chess_board2.board[i][j] = Piece::UB;
+                                Piece::B => { self.upgrade_to2 = Piece::E;self.chess_board2.board[i][j] = Piece::UB;
                                     self.chess_board2.board[i_old][j_old] = Piece::E;return true},
-                                Piece::N => {self.chess_board2.board[i][j] = Piece::UN;
+                                Piece::N => { self.upgrade_to2 = Piece::E;self.chess_board2.board[i][j] = Piece::UN;
                                     self.chess_board2.board[i_old][j_old] = Piece::E;return true },
                                 _ =>  {println!("Precondition not fulfilled!"); return false},
                            } 
@@ -1243,13 +1243,13 @@ impl ChessLogic {
                     {
                        if i==7 {
                             match self.upgrade_to2 {
-                                Piece::q => {self.chess_board2.board[i][j] = Piece::Uq;
+                                Piece::q => { self.upgrade_to2 = Piece::E;self.chess_board2.board[i][j] = Piece::Uq;
                                 self.chess_board2.board[i_old][j_old] = Piece::E; return true},
-                                Piece::r => {self.chess_board2.board[i][j] = Piece::Ur; 
+                                Piece::r => { self.upgrade_to2 = Piece::E;self.chess_board2.board[i][j] = Piece::Ur; 
                                     self.chess_board2.board[i_old][j_old] = Piece::E;return true},
-                                Piece::b => {self.chess_board2.board[i][j] = Piece::Ub; 
+                                Piece::b => { self.upgrade_to2 = Piece::E;self.chess_board2.board[i][j] = Piece::Ub; 
                                     self.chess_board2.board[i_old][j_old] = Piece::E;return true},
-                                Piece::n => {self.chess_board2.board[i][j] = Piece::Un;
+                                Piece::n => { self.upgrade_to2 = Piece::E;self.chess_board2.board[i][j] = Piece::Un;
                                     self.chess_board2.board[i_old][j_old] = Piece::E; return true},
                                 _ =>  {println!("Precondition not fulfilled!"); return false},
                             } 
