@@ -645,6 +645,83 @@ mod tests {
         assert!(!contains(&vec,(7,2)));
     }
 
+    #[test]
+    fn castling_white_side_effect1(){
+        let mut cl = ChessLogic::new();
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::K,7,4);
+        cl.set_piece(true,Piece::R,7,7);
+        cl.set_piece(true,Piece::R,7,0);
+        let vec = cl.get_legal_moves(true,7,4);
+        cl.print_w_legal(true,&vec);
+        assert!(contains(&vec,(7,6)));
+        assert!(contains(&vec,(7,2)));
+
+        cl.movemaker(true,7,4,7,6);
+        assert!(cl.chess_board1.board[7][7]==Piece::E);
+        assert!(cl.chess_board1.board[7][4]==Piece::E);
+        assert!(cl.chess_board1.board[7][6]==Piece::K);
+        assert!(cl.chess_board1.board[7][5]==Piece::R);
+    }
+
+    #[test]
+    fn castling_white_side_effect2(){
+        let mut cl = ChessLogic::new();
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::K,7,4);
+        cl.set_piece(true,Piece::R,7,7);
+        cl.set_piece(true,Piece::R,7,0);
+        let vec = cl.get_legal_moves(true,7,4);
+        cl.print_w_legal(true,&vec);
+        assert!(contains(&vec,(7,6)));
+        assert!(contains(&vec,(7,2)));
+
+        cl.movemaker(true,7,4,7,2);
+        assert!(cl.chess_board1.board[7][0]==Piece::E);
+        assert!(cl.chess_board1.board[7][4]==Piece::E);
+        assert!(cl.chess_board1.board[7][2]==Piece::K);
+        assert!(cl.chess_board1.board[7][3]==Piece::R);
+    }
+
+    #[test]
+    fn castling_white_side_effect3(){
+        let mut cl = ChessLogic::new();
+        cl.all_empty(false);
+        cl.set_piece(false,Piece::K,7,4);
+        cl.set_piece(false,Piece::R,7,7);
+        cl.set_piece(false,Piece::R,7,0);
+        let vec = cl.get_legal_moves(false,7,4);
+        cl.print_w_legal(false,&vec);
+        assert!(contains(&vec,(7,6)));
+        assert!(contains(&vec,(7,2)));
+
+        cl.movemaker(false,7,4,7,2);
+        assert!(cl.chess_board2.board[7][0]==Piece::E);
+        assert!(cl.chess_board2.board[7][4]==Piece::E);
+        assert!(cl.chess_board2.board[7][2]==Piece::K);
+        assert!(cl.chess_board2.board[7][3]==Piece::R);
+    }
+
+    #[test]
+    fn castling_white_side_effect4(){
+        let mut cl = ChessLogic::new();
+        cl.all_empty(false);
+        cl.set_piece(false,Piece::k,0,4);
+        cl.set_piece(false,Piece::r,0,7);
+        cl.set_piece(false,Piece::r,0,0);
+        let vec = cl.get_legal_moves(false,0,4);
+        cl.print_w_legal(false,&vec);
+        assert!(contains(&vec,(0,6)));
+        assert!(contains(&vec,(0,2)));
+
+        cl.movemaker(false,0,4,0,2);
+        assert!(cl.chess_board2.board[0][0]==Piece::E);
+        assert!(cl.chess_board2.board[0][4]==Piece::E);
+        assert!(cl.chess_board2.board[0][2]==Piece::K);
+        assert!(cl.chess_board2.board[0][3]==Piece::R);
+    }
+
+
     pub fn contains(vec: &Vec<(usize,usize)>,(i,j): (usize,usize)) -> bool {
         for (a,b) in vec.iter() {
             if *a==i && j==*b {

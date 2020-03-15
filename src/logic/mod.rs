@@ -1036,11 +1036,50 @@ impl ChessLogic {
 
     //do not forget the side effects while testing
     pub fn movemaker(&mut self, board1:bool, i_old:usize,j_old:usize,i:usize,j:usize) -> bool{
+
         if self.legality_check(board1,i_old,j_old,i,j) {
             if board1 {
                 match self.chess_board1.board[i_old][j_old] {
-                    Piece::K => self.chess_board1.white_k_moved = true,
-                    Piece::k => self.chess_board1.black_k_moved = true,
+                    Piece::K => 
+                    {
+                        if i_old==7 && j_old==4 && i== 7 && (j==6 || j==2)
+                        {
+                            //we are going castle
+                            self.chess_board1.board[i_old][j_old]=Piece::E;
+                            self.chess_board1.board[i][j] = Piece::K;
+                            if j==6 {
+                                self.chess_board1.board[i][j-1] = Piece::R;
+                                self.chess_board1.board[7][7] = Piece::E;
+                            }else{
+                                self.chess_board1.board[i][j+1] = Piece::R;
+                                self.chess_board1.board[7][0] = Piece::E;
+                            }
+                            self.chess_board1.white_k_moved = true;
+                            return true 
+                        }
+                        self.chess_board1.white_k_moved = true;
+                    },
+                    Piece::k => 
+                    {
+                        if i_old==0 && j_old==4
+                        && i== 0 && (j==6 || j==2)
+                        {
+                            //we are going castle
+                            self.chess_board1.board[i_old][j_old]=Piece::E;
+                            self.chess_board1.board[i][j] = Piece::K;
+                            if j==6 {
+                                self.chess_board1.board[i][j-1] = Piece::R;
+                                self.chess_board1.board[0][7] = Piece::E;
+                            }else{
+                                self.chess_board1.board[i][j+1] = Piece::R;
+                                self.chess_board1.board[0][0] = Piece::E;
+                            }
+                            self.chess_board1.white_k_moved = true;
+                            return true 
+                        }
+                        
+                        self.chess_board1.black_k_moved = true;
+                    },
                     _ => {},
                 }
 
@@ -1064,8 +1103,47 @@ impl ChessLogic {
                 true
             }else{
                 match self.chess_board2.board[i_old][j_old] {
-                    Piece::K => self.chess_board2.white_k_moved = true,
-                    Piece::k => self.chess_board2.black_k_moved = true,
+                    Piece::K => 
+                    {
+                        if i_old==7 && j_old==4
+                        && i== 7 && (j==6 || j==2)
+                        {
+                            //we are going castle
+                            self.chess_board2.board[i_old][j_old]=Piece::E;
+                            self.chess_board2.board[i][j] = Piece::K;
+                            if j==6 {
+                                self.chess_board2.board[i][j-1] = Piece::R;
+                                self.chess_board2.board[7][7] = Piece::E;
+                            }else{
+                                self.chess_board2.board[i][j+1] = Piece::R;
+                                self.chess_board2.board[7][0] = Piece::E;
+                            }
+                            self.chess_board2.white_k_moved = true;
+                            return true 
+                        }
+                        self.chess_board2.white_k_moved = true;
+                    },
+                    Piece::k => 
+                    {
+                        if i_old==0 && j_old==4
+                        && i== 0 && (j==6 || j==2)
+                        {
+                            //we are going castle
+                            self.chess_board2.board[i_old][j_old]=Piece::E;
+                            self.chess_board2.board[i][j] = Piece::K;
+                            if j==6 {
+                                self.chess_board2.board[i][j-1] = Piece::R;
+                                self.chess_board2.board[0][7] = Piece::E;
+                            }else{
+                                self.chess_board2.board[i][j+1] = Piece::R;
+                                self.chess_board2.board[0][0] = Piece::E;
+                            }
+                            self.chess_board2.white_k_moved = true;
+                            return true 
+                        }
+                        
+                        self.chess_board2.black_k_moved = true;
+                    },
                     _ => {},
                 }
 
