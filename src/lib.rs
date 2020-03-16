@@ -1,5 +1,5 @@
 #![allow(warnings)] 
-mod logic;
+pub mod logic;
 mod parse;
 mod yfen;
 
