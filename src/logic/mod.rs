@@ -39,6 +39,7 @@ impl ChessLogic {
 
     }
 
+
     pub fn get_white_active(&self, board1:bool) -> bool{
         match board1 {
             true => self.white_active_1,
@@ -143,8 +144,8 @@ impl ChessLogic {
             white_active_2: true,
             half_moves_last_capture1: 0,
             half_moves_last_capture2: 0,
-            movectr1: 0,
-            movectr2: 0,
+            movectr1: 1,
+            movectr2: 1,
             board1_white_capture: [0;5],
             board1_black_capture: [0;5],
             board2_white_capture: [0;5],
@@ -1138,9 +1139,11 @@ impl ChessLogic {
                         if !self.white_active_1 {
                             return false 
                         }else{
-                      
+                            self.pawn_in_last_turn_b1 = None;
+                           
+
                         if i_old==7 && j_old==4 && i== 7 && (j==6 || j==2)
-                        {
+                        && !self.chess_board1.white_k_moved {
                             //we are going castle
                             self.chess_board1.board[i_old][j_old]=Piece::E;
                             self.chess_board1.board[i][j] = Piece::K;
@@ -1165,9 +1168,10 @@ impl ChessLogic {
                         if self.white_active_1 {
                             return false 
                         }else{
-                          
+                            self.pawn_in_last_turn_b1 = None;
                         if i_old==0 && j_old==4
                         && i== 0 && (j==6 || j==2)
+                        && !self.chess_board1.black_k_moved
                         {
                             //we are going castle
                             self.chess_board1.board[i_old][j_old]=Piece::E;
@@ -1195,6 +1199,7 @@ impl ChessLogic {
                         if !self.white_active_1 {
                             return false
                         }else{
+                            self.pawn_in_last_turn_b1 = None;
                         if i==0 {
                            
                             if self.upgrade_to1 == Piece::Q ||  self.upgrade_to1 == Piece::R  || self.upgrade_to1 == Piece::B  ||self.upgrade_to1 == Piece::N {
@@ -1229,6 +1234,7 @@ impl ChessLogic {
                         if self.white_active_1 {
                             return false
                         }else {
+                            self.pawn_in_last_turn_b1 = None;
                        if i==7 {
 
                         if self.upgrade_to1 == Piece::q ||  self.upgrade_to1 == Piece::r  || self.upgrade_to1 == Piece::b  ||self.upgrade_to1 == Piece::n {
@@ -1276,12 +1282,34 @@ impl ChessLogic {
                     self.half_moves_last_capture1+=1;
                 }
 
+               
+
                 //check if pawn is moved
                 if self.chess_board1.board[i_old][j_old]==Piece::P {
+                    if i==4 {
+                        self.pawn_in_last_turn_b1 = Some((i,j));
+                    }
+               
                     self.half_moves_last_capture1=0;
                 }else if self.chess_board1.board[i_old][j_old]==Piece::p {
+                    if i==3 {
+                        self.pawn_in_last_turn_b1 = Some((i,j));
+                    }
+               
                     self.half_moves_last_capture1=0;
+                }else if self.chess_board1.board[i_old][j_old]==Piece::K{
+                    self.pawn_in_last_turn_b1 = None;
+                    self.chess_board1.white_k_moved = true;
+                
+                }else if self.chess_board1.board[i_old][j_old]==Piece::k{
+                    self.pawn_in_last_turn_b1 = None;
+                    self.chess_board1.black_k_moved = true;
+           
+                }else{
+                    self.pawn_in_last_turn_b1 = None;
                 }
+
+              
 
                 //check if black has moved
                 if !self.is_white(board1,i_old,j_old){
@@ -1315,8 +1343,11 @@ impl ChessLogic {
                         if !self.white_active_2 {
                             return false
                         }else{
+                            self.pawn_in_last_turn_b2 = None;
+
                         if i_old==7 && j_old==4
                         && i== 7 && (j==6 || j==2)
+                        && !self.chess_board2.white_k_moved
                         {
                             //we are going castle
                             self.chess_board2.board[i_old][j_old]=Piece::E;
@@ -1342,8 +1373,10 @@ impl ChessLogic {
                         if self.white_active_2 {
                             return false
                         }else{
+                            self.pawn_in_last_turn_b2 = None;
                         if i_old==0 && j_old==4
                         && i== 0 && (j==6 || j==2)
+                        && !self.chess_board2.black_k_moved
                         {
                             //we are going castle
                             self.chess_board2.board[i_old][j_old]=Piece::E;
@@ -1372,7 +1405,7 @@ impl ChessLogic {
                             return false
                         }else{
                         if i==0 {
-
+                            self.pawn_in_last_turn_b2 = None;
                             if self.upgrade_to2 == Piece::Q ||  self.upgrade_to2 == Piece::R  
                             || self.upgrade_to2 == Piece::B || self.upgrade_to2 == Piece::N {
                                 self.half_moves_last_capture2=0;
@@ -1404,6 +1437,7 @@ impl ChessLogic {
                         if self.white_active_2 {
                             return false
                         }else{
+                            self.pawn_in_last_turn_b2 = None;
                        if i==7 {
                             if self.upgrade_to2 == Piece::q || self.upgrade_to2 == Piece::r 
                              || self.upgrade_to2 == Piece::b || self.upgrade_to2 == Piece::n {
@@ -1454,10 +1488,26 @@ impl ChessLogic {
 
                 //check if pawn is moved
                 if self.chess_board2.board[i_old][j_old]==Piece::P {
+                    if i==4 {
+                        self.pawn_in_last_turn_b2 = Some((i,j));
+                    }
                     self.half_moves_last_capture2=0;
                 }else if self.chess_board2.board[i_old][j_old]==Piece::p {
+                    if i==3 {
+                        self.pawn_in_last_turn_b2 = Some((i,j));
+                    }
                     self.half_moves_last_capture2=0;
+                }else if self.chess_board2.board[i_old][j_old]==Piece::K {
+                    self.pawn_in_last_turn_b2 = None;
+                    self.chess_board2.white_k_moved = true;
+                }else if self.chess_board2.board[i_old][j_old]==Piece::k {
+                    self.pawn_in_last_turn_b2 = None;
+                    self.chess_board2.black_k_moved = true;
+                }else{
+                    self.pawn_in_last_turn_b2 = None;
                 }
+
+          
 
                 //check if black has moved
                 if !self.is_white(board1,i_old,j_old){

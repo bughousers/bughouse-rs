@@ -1,14 +1,14 @@
 #![allow(warnings)] 
 mod logic;
 mod parse;
-mod xfen;
+mod yfen;
 
 #[cfg(test)]
 mod tests {
     use crate::logic::board::Piece;
     use crate::logic::ChessLogic;
     use crate::parse::parser;
-    use crate::xfen::xfen::*;
+    use crate::yfen::yfen::*;
 
 
     #[test]
@@ -90,13 +90,14 @@ mod tests {
     #[test]
     fn attacks1(){
         let mut cl = ChessLogic::new();
-        cl.chess_board1.board[5][4] = Piece::P;
-        cl.chess_board1.board[5][5] = Piece::p;
-        cl.chess_board1.board[4][2] = Piece::R;
-        cl.chess_board1.board[4][3] = Piece::q;
-        cl.chess_board1.board[1][7] = Piece::E;
+      
+        cl.set_piece(true,Piece::P,5,4);
+        cl.set_piece(true,Piece::p,5,5);
+        cl.set_piece(true,Piece::R,4,2);
+        cl.set_piece(true,Piece::q,4,3);
+        cl.set_piece(true,Piece::E,1,7);
         for i in 0..8 {
-            cl.chess_board1.board[6][i] = Piece::E;
+            cl.set_piece(true,Piece::E,6,i);
         }
         
         cl.print(true);
@@ -115,10 +116,10 @@ mod tests {
     fn checkmate1(){
         let mut cl = ChessLogic::new();
         cl.all_empty(true);
-        cl.chess_board1.board[1][4]=Piece::N;
-        cl.chess_board1.board[5][7]=Piece::R;
-        cl.chess_board1.board[1][6]=Piece::p;
-        cl.chess_board1.board[1][7]=Piece::k;
+        cl.set_piece(true,Piece::N,1,4);
+        cl.set_piece(true,Piece::R,5,7);
+        cl.set_piece(true,Piece::p,1,6);
+        cl.set_piece(true,Piece::k,1,7);
 
         let vec = cl.get_legal_moves(true,1,7);
         cl.print_w_legal(true,&vec);
@@ -720,6 +721,7 @@ mod tests {
         assert!(contains(&vec,(7,2)));
 
         cl.movemaker(true,7,4,7,6);
+        cl.print(true);
         assert!(cl.chess_board1.board[7][7]==Piece::E);
         assert!(cl.chess_board1.board[7][4]==Piece::E);
         assert!(cl.chess_board1.board[7][6]==Piece::K);
@@ -823,10 +825,54 @@ mod tests {
         assert!(cl.upgrade_to1==Piece::E);
     }
 
-    
-    fn trivial_xfen(){
-        let cl =ChessLogic::new();
-        assert!(gen_xfen(&cl));
+    #[test]
+    fn trivial_yfen(){
+        let mut cl =ChessLogic::new();
+        let mut a = gen_yfen(&mut cl);
+        let mut st = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w ---- - 0 1".to_string();
+        match a {
+            (b,c) => {
+                println!("{}",b);println!("{}",c);
+                assert_eq!(st,b); 
+                assert_eq!(st,c);},
+            _ => {},
+        }
+
+        cl.movemaker(true,6,4,4,4);
+        a = gen_yfen(&mut cl);
+        st = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b ---- e3 0 1".to_string();
+        match a {
+            (b,c) => {
+                println!("{}",b);println!("{}",c);
+                println!("{:?}",cl.get_pawn_in_last_turn(true));
+                assert_eq!(st,b); 
+               },
+            _ => {},
+        }
+
+        cl.movemaker(true,1,2,3,2);
+        a = gen_yfen(&mut cl);
+        st = "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w ---- c6 0 2".to_string();
+        match a {
+            (b,c) => {
+                println!("{}",b);println!("{}",c);
+                println!("{:?}",cl.get_pawn_in_last_turn(true));
+                assert_eq!(st,b); 
+               },
+            _ => {},
+        }
+
+        cl.movemaker(true,7,6,5,5);
+        a = gen_yfen(&mut cl);
+        st = "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b ---- - 1 2".to_string();
+        match a {
+            (b,c) => {
+                println!("{}",b);println!("{}",c);
+                println!("{:?}",cl.get_pawn_in_last_turn(true));
+                assert_eq!(st,b); 
+               },
+            _ => {},
+        }
     }
     
 
