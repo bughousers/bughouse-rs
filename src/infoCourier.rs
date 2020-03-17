@@ -176,15 +176,5 @@ pub mod infoCourier {
         return false
     }
 
-    fn find_piece(p: Piece,board1:bool, cl:&ChessLogic) -> Option<(usize,usize)> {
-        for i in 0..8 {
-            for j in 0..8 {
-                if cl.chess_board1.board[i][j] == p {
-                   return Some((i,j))
-                }
-            }
-        }
-        None 
-    }
 
 }

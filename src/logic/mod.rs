@@ -3,6 +3,13 @@ use crate::logic::board::ChessBoard;
 use crate::logic::board::Piece;
 use std::cmp;
 
+
+
+#[derive(Clone, Copy, PartialEq)]
+pub enum Winner {
+    W,B,N,P,
+}
+
 pub struct ChessLogic {
     pub chess_board1: ChessBoard, //board1
     pub chess_board2: ChessBoard, //board2
@@ -25,6 +32,7 @@ pub struct ChessLogic {
     board1_black_capture: [u8;5], //"",board1,black
     board2_white_capture: [u8;5], //"",board2,white
     board2_black_capture: [u8;5], //"",board2,black
+    winner: Winner,
 }
 
 impl ChessLogic {
@@ -55,7 +63,6 @@ impl ChessLogic {
             }
         }
     }
-
     pub fn get_pools(&self) -> ([u8;5],[u8;5],[u8;5],[u8;5]){
         (
             self.board1_white_capture, 
@@ -187,6 +194,7 @@ impl ChessLogic {
             board1_black_capture: [0;5],
             board2_white_capture: [0;5],
             board2_black_capture: [0;5],
+            winner: Winner::N,
         }
     }
 
@@ -1211,7 +1219,11 @@ impl ChessLogic {
 
     //deploy a piece on your field as a turn 
     pub fn deploy_piece(&mut self,board1:bool,white:bool,p:Piece,i:usize,j:usize) -> bool {
-        
+        //deploy the piece only if it is legal to play
+        if self.winner!=Winner::N {
+            return false
+        }
+
         //check for i j bounds
         if !self.valid(i as i32,j as i32) {
             println!("out of bounds for index, deploy_piece");
@@ -1336,6 +1348,10 @@ impl ChessLogic {
 
     //do not forget the side effects while testing
     pub fn movemaker(&mut self, board1:bool, i_old:usize,j_old:usize,i:usize,j:usize) -> bool{
+        if self.winner!=Winner::N {
+            return false
+        }
+        
         //check of move is legal
         if self.legality_check(board1,i_old,j_old,i,j) {
             if board1 {
@@ -1524,12 +1540,12 @@ impl ChessLogic {
 
                 //check if game  should end
                 if tmp==Piece::K || tmp==Piece::k  {
-                    self.finish_up();
+                    self.finish_up(tmp);
                 }
 
                 //send captured piece to your ally
                 match self.box_index(tmp) {
-                    None => {}, //nothing to di
+                    None => (), //nothing to di
                     Some(a) => {
                         if self.is_white(board1,i,j) {
                             self.board2_white_capture[a]+=1;
@@ -1720,7 +1736,7 @@ impl ChessLogic {
 
                 //check if game  should end
                 if tmp==Piece::K || tmp==Piece::k {
-                    self.finish_up();
+                    self.finish_up(tmp);
                 }
 
                 match self.box_index(tmp) {
@@ -1760,12 +1776,52 @@ impl ChessLogic {
 
     //stub
     //TODO: finish_up function
-    fn finish_up(&self){
-        println!("This is a stub, todo: game done");
+    fn finish_up(&mut self, p:Piece){
+        if p==Piece::K {
+            self.winner=Winner::B;
+        }else if p==Piece::k {
+            self.winner=Winner::W;
+        }
     }
 
-    //ONLY FOR TESTING
-    pub fn recv_piece(&mut self, board1:bool, white:bool,p:Piece){
+    pub fn check_patt(&mut self,board1:bool, white:bool) -> bool{
+        let mut pic = Piece::E;
+        if white { pic = Piece::K; } else { pic = Piece::k; }
+
+        match self.find_piece(pic,board1) {
+            None => return false,
+            Some((i,j)) => {
+                if !self.is_attacked(board1,white,i,j) && 
+                self.king_move(board1,i,j)==Vec::new() &&
+                self.pool_empty(board1,white) {
+                    self.winner=Winner::P;
+                    return true
+                }
+            },
+        }
+        return false
+    }
+
+    fn pool_empty(&self, board1:bool,white:bool) -> bool {
+        for i in 0..5 {
+            if board1 {
+                if white {
+                   if self.board1_white_capture[i]!=0 {return false}
+                }else{
+                   if self.board1_black_capture[i]!=0 {return false}
+                }
+            }else{
+                if white {
+                    if self.board2_white_capture[i]!=0 {return false}
+                 }else{
+                    if self.board2_black_capture[i]!=0 {return false}
+                 }
+            }
+        }
+        true
+    }
+
+    fn recv_piece(&mut self, board1:bool, white:bool,p:Piece){
         let i = self.box_index(p);
         if let Some(x) = i { 
             if board1 {
@@ -1784,5 +1840,27 @@ impl ChessLogic {
         }
     }
 
+    pub fn find_piece(&self, p: Piece, board1:bool) -> Option<(usize,usize)> {
+        for i in 0..8 {
+            for j in 0..8 {
+                if board1 {
+                    if self.chess_board1.board[i][j] == p {
+                        return Some((i,j))
+                     }
+                }else{
+                    if self.chess_board2.board[i][j] == p {
+                        return Some((i,j))
+                     }
+                }
+              
+            }
+        }
+        None 
+    }
+    
 }
+
+
+
+
 
