@@ -1,7 +1,7 @@
 #![allow(warnings)] 
 pub mod logic;
-mod parse;
-mod infoCourier;
+pub mod parse;
+pub mod infoCourier;
 
 #[cfg(test)]
 mod tests {
