@@ -1,4 +1,4 @@
-pub mod yfen {
+pub mod infoCourier {
     use crate::logic::ChessLogic;
     use crate::logic::board;
     use crate::logic::board::Piece;
@@ -86,6 +86,8 @@ pub mod yfen {
             }
 
             //check for castling
+            //this is used for my special case yfen
+            /*
             let mut castling = "".to_string();
             match find_piece(Piece::K,*board1,cl) {
                 None => {
@@ -128,7 +130,27 @@ pub mod yfen {
                         castling = format!("{}{}", castling, "-".to_string());
                     }    
                 },
-            }        
+            }
+            */ 
+
+            //get if king has moved 
+            let mut castling = "".to_string();
+            if cl.get_if_king_moved(*board1,true) {
+                castling = format!("{}{}", castling, "K".to_string());
+                castling = format!("{}{}", castling, "Q".to_string());
+
+            }else{
+                castling = format!("{}{}", castling, "-".to_string());
+                castling = format!("{}{}", castling, "-".to_string());
+            }
+            if cl.get_if_king_moved(*board1,false) {
+                castling = format!("{}{}", castling, "k".to_string());
+                castling = format!("{}{}", castling, "q".to_string());
+            }else{
+                castling = format!("{}{}", castling, "-".to_string());
+                castling = format!("{}{}", castling, "-".to_string());   
+            }
+
 
             //get halfturns
             let mut halfturns = cl.get_half_moves(*board1).to_string();
@@ -164,4 +186,5 @@ pub mod yfen {
         }
         None 
     }
+
 }

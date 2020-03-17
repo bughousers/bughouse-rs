@@ -40,6 +40,31 @@ impl ChessLogic {
 
     }
 
+    pub fn get_if_king_moved(&self,board1:bool,white:bool) -> bool{
+        if board1 {
+            if white{
+                 self.chess_board1.white_k_moved
+            }  else{
+                self.chess_board1.black_k_moved
+            }         
+        }else{
+            if white{
+               self.chess_board2.white_k_moved
+            }else{
+                self.chess_board2.black_k_moved
+            }
+        }
+    }
+
+    pub fn get_pools(&self) -> ([u8;5],[u8;5],[u8;5],[u8;5]){
+        (
+            self.board1_white_capture, 
+            self.board1_black_capture, 
+            self.board2_white_capture, 
+            self.board2_black_capture
+        )
+    }
+
     //get a bool that is true if white is active
     pub fn get_white_active(&self, board1:bool) -> bool{
         match board1 {

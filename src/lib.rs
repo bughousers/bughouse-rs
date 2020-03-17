@@ -1,14 +1,14 @@
 #![allow(warnings)] 
 mod logic;
 mod parse;
-mod yfen;
+mod infoCourier;
 
 #[cfg(test)]
 mod tests {
     use crate::logic::board::Piece;
     use crate::logic::ChessLogic;
     use crate::parse::parser;
-    use crate::yfen::yfen::*;
+    use crate::infoCourier::infoCourier::*;
 
 
     #[test]
@@ -913,7 +913,6 @@ mod tests {
         }
         return false
     }
-
 
 
 }
