@@ -135,7 +135,8 @@ impl ChessLogic {
 
     //print legal moves with input of legal moves
     pub fn print_w_legal(&mut self,board1:bool,locs: &Vec<(usize,usize)>){
-        let mut vec = Vec::new();
+        //its highly probably that a piece will have 8-16 legal moves
+        let mut vec = Vec::with_capacity(8);
         for &(i,j) in locs.iter() {
             if self.get_piece(board1,i,j)== Piece::E {
                 //legal moves are encoded with 'L'
@@ -211,7 +212,8 @@ impl ChessLogic {
                 match (old_i,old_j) {
                     //unmoved (insert double move too -- Double move)
                     (6,_) =>  {
-                        let mut vec = Vec::new();
+                        //max 4 moves
+                        let mut vec = Vec::with_capacity(2);
                         if self.is_empty(board1,old_i-1,old_j) {
                             vec.push((old_i-1,old_j));
                             // -2 only if -1 is empty
@@ -231,7 +233,8 @@ impl ChessLogic {
                     },
                     //6th lane with en passant
                     (3,_) => {
-                        let mut vec = Vec::new();
+                        //max 5 moves
+                        let mut vec = Vec::with_capacity(2);
                         if self.is_empty(board1,old_i-1,old_j) {
                             vec.push((old_i-1,old_j));
                         }
@@ -267,7 +270,8 @@ impl ChessLogic {
                     },
                     //no special moves
                     (_,_) => {
-                        let mut vec = Vec::new();
+                        //max 4 moves
+                        let mut vec = Vec::with_capacity(2);
                         if self.is_empty(board1,old_i-1,old_j) {
                             vec.push((old_i-1,old_j));
                         }
@@ -286,7 +290,8 @@ impl ChessLogic {
                 match (old_i,old_j) {
                     //double moves
                     (1,_) =>  {
-                        let mut vec = Vec::new();
+                        //max 4 moves
+                        let mut vec = Vec::with_capacity(2);
                         //W double move
                         if self.is_empty(board1,old_i+1,old_j) {
                             vec.push((old_i+1,old_j));
@@ -306,7 +311,8 @@ impl ChessLogic {
                     },
                     //4th line with enpassant 
                     (4,_) => {
-                            let mut vec = Vec::new();
+                            //max 5 moves
+                            let mut vec = Vec::with_capacity(2);
                             //front empty
                             if self.is_empty(board1,old_i+1,old_j) {
                                 vec.push((old_i+1,old_j));
@@ -482,7 +488,7 @@ impl ChessLogic {
 
     //gets legal moves on a line
     fn horizontal_mov(&self,board1:bool, i:usize, j:usize) -> Vec<(usize,usize)> {
-        let mut vec = Vec::new();
+        let mut vec = Vec::with_capacity(4);
         let mut jc = j;
         while jc > 0 {
             jc -= 1;
@@ -512,7 +518,7 @@ impl ChessLogic {
 
       //gets legal moves on a column, horizontal_move but jc is changed with ic
     fn vertical_mov(&self,board1:bool, i:usize, j:usize)  -> Vec<(usize,usize)>{
-        let mut vec = Vec::new();
+        let mut vec = Vec::with_capacity(4);
         let mut ic = i;
         while ic > 0 {
             ic -= 1;
@@ -549,7 +555,7 @@ impl ChessLogic {
 
     //iterates for [+n,-n] ; [+n,-n] combinations 1..7 and gets legal moves
     fn x_mov(&self,board1:bool, i:usize, j:usize)  -> Vec<(usize,usize)>{
-        let mut vec = Vec::new();
+        let mut vec = Vec::with_capacity(4);
         let mut ic = i;
         let mut jc = j;
         let w = self.is_white(board1,i,j);
@@ -621,7 +627,7 @@ impl ChessLogic {
         //all possible combinations of +2, -2, +1, -1 for each square
         let twoway = [-2,2];
         let oneway = [1,-1];
-        let mut vec = Vec::new();
+        let mut vec = Vec::Vec::with_capacity(2);
         let w = self.is_white(board1,i,j);
 
         //first -2,2 then 1,-1
@@ -1040,7 +1046,7 @@ impl ChessLogic {
     fn king_move(&mut self, board1:bool, i:usize,j:usize) -> Vec<(usize,usize)>{
         let mut a = [-1,0,1];
         let mut b = [-1,0,1];
-        let mut vec = Vec::new();
+        let mut vec = Vec::with_capacity(2);
         let ix = i as i32;
         let jx = j as i32;
         let mut piece = Piece::E;
@@ -1208,7 +1214,7 @@ impl ChessLogic {
             false => &mut self.chess_board2,
         }
     }
-    
+
     pub fn get_board_n(&self, board1:bool )-> &ChessBoard{
         match board1 {
             true => &self.chess_board1,
