@@ -1991,6 +1991,11 @@ impl ChessLogic {
         }
         None 
     }
+
+    pub fn get_castling_rights(&self,board1:bool) -> [bool;4] {
+        let mut x = [false;4];
+        return x
+    }
     
 }
 

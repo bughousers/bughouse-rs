@@ -5,7 +5,7 @@ pub mod infoCourier {
     use crate::parse::parser;
     use std;
 
-    pub fn gen_yfen(cl:&mut ChessLogic) -> (String,String) {
+    pub fn gen_yfen(cl:& ChessLogic) -> (String,String) {
         //pieces
         //active color
         //castling rights KQkq
