@@ -45,6 +45,10 @@ pub struct ChessBoard {
     pub board: [[Piece; 8]; 8],
     pub white_k_moved: bool,
     pub black_k_moved: bool,
+    pub white_rook_q_moved: bool,
+    pub white_rook_k_moved: bool,
+    pub black_rook_q_moved: bool,
+    pub black_rook_k_moved: bool,
 }
 
 
@@ -56,6 +60,10 @@ impl ChessBoard {
             board: arr,
             white_k_moved: false,
             black_k_moved: false,
+            white_rook_q_moved: false,
+            white_rook_k_moved: false,
+            black_rook_q_moved: false,
+            black_rook_k_moved: false,
         }
         
     }

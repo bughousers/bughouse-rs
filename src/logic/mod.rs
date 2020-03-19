@@ -1106,6 +1106,7 @@ impl ChessLogic {
                 && !self.is_attacked(board1,wayt,7,6) 
                 && !self.is_attacked(board1,wayt,7,5)
                 && !self.is_attacked(board1,wayt,7,4)
+                && !self.chess_board1.white_rook_k_moved
                 {
                     vec.push((7,6))
                 }
@@ -1117,7 +1118,8 @@ impl ChessLogic {
                 && !self.is_attacked(board1,wayt,7,3) 
                 && !self.is_attacked(board1,wayt,7,2)
                 && !self.is_attacked(board1,wayt,7,4)
-                && !self.is_attacked(board1,wayt,7,1) {
+                && !self.is_attacked(board1,wayt,7,1)
+                && !self.chess_board1.white_rook_q_moved {
                     vec.push((7,2))
                 }
             }else{
@@ -1128,6 +1130,7 @@ impl ChessLogic {
                 && !self.is_attacked(board1,wayt,0,6) 
                 && !self.is_attacked(board1,wayt,0,5)
                 && !self.is_attacked(board1,wayt,0,4)
+                && !self.chess_board1.black_rook_k_moved
                 {
                     vec.push((0,6))
                 }
@@ -1139,7 +1142,8 @@ impl ChessLogic {
                 && !self.is_attacked(board1,wayt,0,3) 
                 && !self.is_attacked(board1,wayt,0,2)
                 && !self.is_attacked(board1,wayt,0,4)
-                && !self.is_attacked(board1,wayt,0,1) {
+                && !self.is_attacked(board1,wayt,0,1)
+                && !self.chess_board1.black_rook_q_moved {
                     vec.push((0,2))
                 }
             }
@@ -1152,6 +1156,7 @@ impl ChessLogic {
                 && !self.is_attacked(board1,wayt,7,6) 
                 && !self.is_attacked(board1,wayt,7,5)
                 && !self.is_attacked(board1,wayt,7,4)
+                && !self.chess_board2.white_rook_k_moved
                 {
                     vec.push((7,6))
                 }
@@ -1163,7 +1168,8 @@ impl ChessLogic {
                 && !self.is_attacked(board1,wayt,7,3) 
                 && !self.is_attacked(board1,wayt,7,2)
                 && !self.is_attacked(board1,wayt,7,4)
-                && !self.is_attacked(board1,wayt,7,1) {
+                && !self.is_attacked(board1,wayt,7,1)
+                && !self.chess_board2.white_rook_q_moved {
                     vec.push((7,2))
                 }
             }else{
@@ -1174,6 +1180,7 @@ impl ChessLogic {
                 && !self.is_attacked(board1,wayt,0,6) 
                 && !self.is_attacked(board1,wayt,0,5)
                 && !self.is_attacked(board1,wayt,0,4)
+                && !self.chess_board2.black_rook_k_moved
                 {
                     vec.push((0,6))
                 }
@@ -1185,7 +1192,8 @@ impl ChessLogic {
                 && !self.is_attacked(board1,wayt,0,3) 
                 && !self.is_attacked(board1,wayt,0,2)
                 && !self.is_attacked(board1,wayt,0,4)
-                && !self.is_attacked(board1,wayt,0,1) {
+                && !self.is_attacked(board1,wayt,0,1)
+                && !self.chess_board2.black_rook_q_moved{
                     vec.push((0,2))
                 }
             }
@@ -1260,6 +1268,16 @@ impl ChessLogic {
                             self.pawn_in_last_turn_b1 = None;
                             self.half_moves_last_capture1+=1;
                         }
+
+                        if p == Piece::R {
+                            if i==7 && j==7 {
+                                self.chess_board1.white_rook_k_moved = false;
+                            }
+                            if i==7 && j==7 {
+                                self.chess_board1.white_rook_q_moved = false;
+                            }
+                        }
+
                         return true
                     } else {return false}
                 }
@@ -1282,6 +1300,15 @@ impl ChessLogic {
                         }else{
                             self.pawn_in_last_turn_b1 = None;
                             self.half_moves_last_capture1+=1;
+                        }
+
+                        if p == Piece::r {
+                            if i==0 && j==7 {
+                                self.chess_board1.black_rook_k_moved = false;
+                            }
+                            if i==0 && j==0 {
+                                self.chess_board1.black_rook_q_moved = false;
+                            }
                         }
                         self.movectr1+=1;
                         return true
@@ -1316,6 +1343,15 @@ impl ChessLogic {
                             self.pawn_in_last_turn_b2 = None;
                             self.half_moves_last_capture2+=1;
                         }
+
+                        if p == Piece::R {
+                            if i==7 && j==7 {
+                                self.chess_board2.white_rook_k_moved = false;
+                            }
+                            if i==7 && j==0 {
+                                self.chess_board2.white_rook_q_moved = false;
+                            }
+                        }
                         return true
                     }else { return false}
                 }
@@ -1339,6 +1375,15 @@ impl ChessLogic {
                             self.pawn_in_last_turn_b2 = None;
                             self.half_moves_last_capture2+=1;
                         }
+
+                        if p == Piece::r {
+                            if i==0 && j==7 {
+                                self.chess_board2.black_rook_k_moved = false;
+                            }
+                            if i==0 && j==0 {
+                                self.chess_board2.black_rook_q_moved = false;
+                            }
+                        }
                         self.movectr2+=1;
                         return true
                     } else {return false}
@@ -1360,6 +1405,31 @@ impl ChessLogic {
         if self.legality_check(board1,i_old,j_old,i,j) {
             if board1 {
                 match self.chess_board1.board[i_old][j_old] {
+                    Piece::R => {
+                        if !self.white_active_1 {
+                            return false 
+                        }else{
+                            if i_old == 7 && j_old == 7 {
+                                self.chess_board1.white_rook_k_moved=true;
+                            }
+                            if i_old == 7 && j_old == 0 {
+                                self.chess_board1.white_rook_q_moved=true;
+                            }
+                        }
+                    },
+                    Piece::r => {
+                        if self.white_active_1 {
+                            return false 
+                        }else{
+                            if i_old == 0 && j_old == 7 {
+                                self.chess_board1.black_rook_k_moved=true;
+                            }
+                            if i_old == 0 && j_old == 0 {
+                                self.chess_board1.black_rook_q_moved=true;
+                            }
+                        }
+                    },
+
                     Piece::K => 
                     {
                         if !self.white_active_1 {
@@ -1573,6 +1643,31 @@ impl ChessLogic {
 
             }else{
                 match self.chess_board2.board[i_old][j_old] {
+                    Piece::R => {
+                        if !self.white_active_2 {
+                            return false 
+                        }else{
+                            if i_old == 7 && j_old == 7 {
+                                self.chess_board2.white_rook_k_moved=true;
+                            }
+                            if i_old == 7 && j_old == 0 {
+                                self.chess_board2.white_rook_q_moved=true;
+                            }
+                        }
+                    },
+                    Piece::r => {
+                        if self.white_active_2 {
+                            return false 
+                        }else{
+                            if i_old == 0 && j_old == 7 {
+                                self.chess_board2.black_rook_k_moved=true;
+                            }
+                            if i_old == 0 && j_old == 0 {
+                                self.chess_board2.black_rook_q_moved=true;
+                            }
+                        }
+                    },
+
                     Piece::K => 
                     {
                         if !self.white_active_2 {
@@ -1723,10 +1818,6 @@ impl ChessLogic {
 
                 //check if pawn is moved
                 if self.chess_board2.board[i_old][j_old]==Piece::P {
-                 
-                    self.pawn_in_last_turn_b2 = Some((i,j));
-                    self.half_moves_last_capture2=0;
-                }else if self.chess_board2.board[i_old][j_old]==Piece::p {
                     self.pawn_in_last_turn_b2 = Some((i,j));
                     self.half_moves_last_capture2=0;
                 }else if self.chess_board2.board[i_old][j_old]==Piece::K {
