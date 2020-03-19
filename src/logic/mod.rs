@@ -7,7 +7,7 @@ use std::cmp;
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum Winner {
-    W,B,N,P,
+    W1,B1,N,P,W2,B2,
 }
 
 pub struct ChessLogic {
@@ -119,6 +119,10 @@ impl ChessLogic {
             true => self.pawn_in_last_turn_b1,
             false => self.pawn_in_last_turn_b2,
         }
+    }
+
+    pub fn get_winner(&self, board1:bool) -> Winner {
+        self.winner
     }
 
     //ONLY FOR TESTING
@@ -1501,7 +1505,6 @@ impl ChessLogic {
                 }else {
                     self.half_moves_last_capture1+=1;
                 }
-
                
 
                 //check if pawn is moved
@@ -1540,8 +1543,15 @@ impl ChessLogic {
 
                 //check if game  should end
                 if tmp==Piece::K || tmp==Piece::k  {
-                    self.finish_up(tmp);
+                    self.finish_up(tmp,board1);
                 }
+
+
+                if self.check_patt(board1,true) || self.check_patt(board1,false) {
+                    self.winner = Winner::P;
+                    return false
+                }
+
 
                 //send captured piece to your ally
                 match self.box_index(tmp) {
@@ -1734,11 +1744,18 @@ impl ChessLogic {
                     self.movectr2+=1;
                 }
 
+ 
+
                 //check if game  should end
-                if tmp==Piece::K || tmp==Piece::k {
-                    self.finish_up(tmp);
+                if tmp==Piece::K || tmp==Piece::k  {
+                    self.finish_up(tmp,board1);
                 }
 
+                if self.check_patt(board1,true) || self.check_patt(board1,false) {
+                    self.winner = Winner::P;
+                    return false
+                }
+                
                 match self.box_index(tmp) {
                     None => {}, //nothing to di
                     Some(a) => {
@@ -1776,11 +1793,19 @@ impl ChessLogic {
 
     //stub
     //TODO: finish_up function
-    fn finish_up(&mut self, p:Piece){
+    fn finish_up(&mut self, p:Piece, board1:bool){
         if p==Piece::K {
-            self.winner=Winner::B;
+            if board1 {
+                self.winner=Winner::B1;
+            }else{
+                self.winner=Winner::B2;
+            }
         }else if p==Piece::k {
-            self.winner=Winner::W;
+            if board1 {
+                self.winner=Winner::W1;
+            }else{
+                self.winner=Winner::W2;
+            }
         }
     }
 
@@ -1788,12 +1813,30 @@ impl ChessLogic {
         let mut pic = Piece::E;
         if white { pic = Piece::K; } else { pic = Piece::k; }
 
+        for i in 0..8 {
+            for j in 0..8 {
+                if white {
+                    if self.is_white(board1,i,j) && self.get_board(board1).board[i][j]!=Piece::K {
+                        if self.get_legal_moves(board1,i,j)!=Vec::new() {
+                            return false
+                        }
+                        
+                    }
+                }else{
+                    if !self.is_white(board1,i,j) &&  self.get_board(board1).board[i][j]!=Piece::k {
+                        if self.get_legal_moves(board1,i,j)!=Vec::new() {
+                            return false
+                        }
+                    }
+                }
+            }
+        }
+
         match self.find_piece(pic,board1) {
             None => return false,
             Some((i,j)) => {
                 if !self.is_attacked(board1,white,i,j) && 
-                self.king_move(board1,i,j)==Vec::new() &&
-                self.pool_empty(board1,white) {
+                self.pool_empty(board1,white){
                     self.winner=Winner::P;
                     return true
                 }
