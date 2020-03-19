@@ -44,7 +44,21 @@ mod tests {
 
         assert_eq!(vec_norm,vecbyhand_norm);
     }
-
+    
+    #[test]
+    fn illegal_rook(){
+        let mut cl = ChessLogic::new();
+        cl.all_empty(true);
+        cl.set_piece(true,Piece::K,7,4);
+        cl.set_piece(true,Piece::R,7,7);
+        cl.set_piece(true,Piece::r,0,0);
+        let board1 = true;
+        assert!(cl.movemaker(board1,7,7,6,7));
+        assert!(cl.movemaker(board1,0,0,1,0));
+        assert!(cl.movemaker(board1,6,7,7,7));
+        assert!(cl.movemaker(board1,1,0,1,1));
+        assert!(!cl.movemaker(board1,7,4,7,6));
+    }
     #[test]
     fn rook2(){
         let mut cl = ChessLogic::new();
