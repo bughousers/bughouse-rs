@@ -1208,6 +1208,13 @@ impl ChessLogic {
             false => &mut self.chess_board2,
         }
     }
+    
+    pub fn get_board_n(&self, board1:bool )-> &ChessBoard{
+        match board1 {
+            true => &self.chess_board1,
+            false => &self.chess_board2,
+        }
+    }
 
     //rly important detail
     //in tandem you can move your pinned piece, then the enemy can capture 
@@ -1994,6 +2001,10 @@ impl ChessLogic {
 
     pub fn get_castling_rights(&self,board1:bool) -> [bool;4] {
         let mut x = [false;4];
+        x[0] = self.get_board_n(board1).white_rook_k_moved;
+        x[1] = self.get_board_n(board1).white_rook_q_moved;
+        x[2] = self.get_board_n(board1).black_rook_k_moved;
+        x[3] = self.get_board_n(board1).black_rook_q_moved;
         return x
     }
     
