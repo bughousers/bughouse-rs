@@ -627,7 +627,7 @@ impl ChessLogic {
         //all possible combinations of +2, -2, +1, -1 for each square
         let twoway = [-2,2];
         let oneway = [1,-1];
-        let mut vec = Vec::Vec::with_capacity(2);
+        let mut vec = Vec::with_capacity(2);
         let w = self.is_white(board1,i,j);
 
         //first -2,2 then 1,-1
