@@ -85,9 +85,34 @@ impl ChessBoard {
         
     }
 
+
+pub fn set_init_array(&mut self){
+    for i in 0..8 {
+        self.board[1][i] = Piece::p;
+        self.board[6][i] = Piece::P;
+    }
+        self.board[7][0] = Piece::R;
+        self.board[7][1] = Piece::N;
+        self.board[7][2] = Piece::B;
+        self.board[7][3] = Piece::Q;
+        self.board[7][4] = Piece::K;
+        self.board[7][5] = Piece::B;
+        self.board[7][6] = Piece::N;
+        self.board[7][7] = Piece::R;
+        self.board[0][0] = Piece::r;
+        self.board[0][1] = Piece::n;
+        self.board[0][2] = Piece::b;
+        self.board[0][3] = Piece::q;
+        self.board[0][4] = Piece::k;
+        self.board[0][5] = Piece::b;
+        self.board[0][6] = Piece::n;
+        self.board[0][7] = Piece::r;
 }
 
-fn get_init_array() -> [[Piece; 8]; 8] {
+
+}
+
+pub fn get_init_array() -> [[Piece; 8]; 8] {
     let mut arr = [[Piece::E; 8]; 8];
     for i in 0..8 {
         arr[1][i] = Piece::p;
@@ -112,6 +137,7 @@ fn get_init_array() -> [[Piece; 8]; 8] {
 
     arr
 }
+
 
 
 

@@ -36,6 +36,42 @@ pub struct ChessLogic {
 }
 
 impl ChessLogic {
+    pub fn refresh(&mut self){
+        self.chess_board1.set_init_array();
+       
+        self.chess_board1.white_k_moved = false;
+        self.chess_board1.black_k_moved = false; 
+        self.chess_board1.white_rook_q_moved = false; 
+        self.chess_board1.white_rook_k_moved = false; 
+        self.chess_board1.black_rook_q_moved = false; 
+        self.chess_board1.black_rook_k_moved = false; 
+
+        self.chess_board2.set_init_array();
+
+        self.chess_board2.white_k_moved = false; 
+        self.chess_board2.black_k_moved = false; 
+        self.chess_board2.white_rook_q_moved = false; 
+        self.chess_board2.white_rook_k_moved = false; 
+        self.chess_board2.black_rook_q_moved = false; 
+        self.chess_board2.black_rook_k_moved = false; 
+
+        self.pawn_in_last_turn_b1 = None;  
+        self.pawn_in_last_turn_b2 = None; 
+        self.upgrade_to1 = Piece::E; 
+        self.upgrade_to2 = Piece::E; 
+        self.white_active_1 = true; 
+        self.white_active_2 = true; 
+        self.half_moves_last_capture1 = 0; 
+        self.half_moves_last_capture2 = 0; 
+        self.movectr1 = 1; 
+        self.movectr2 = 1; 
+        self.board1_white_capture = [0;5]; 
+        self.board1_black_capture = [0;5]; 
+        self.board2_white_capture = [0;5]; 
+        self.board2_black_capture = [0;5]; 
+        self.winner= Winner::N; 
+    }
+
     //prints one of the boards
     pub fn print(&self,board1:bool){
         if board1{
