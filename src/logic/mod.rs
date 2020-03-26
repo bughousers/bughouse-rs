@@ -1219,7 +1219,7 @@ impl ChessLogic {
                         self.white_active_1 = !self.white_active_1;
 
                         if p == Piece::P {
-                            if i==8 {
+                            if i==0 {
                                 return Err(MoveError::NotLegal);
                             }
 
@@ -1258,7 +1258,7 @@ impl ChessLogic {
                         self.white_active_1 = !self.white_active_1;
 
                         if p == Piece::p {
-                            if i==0 {
+                            if i==7 {
                                 return Err(MoveError::NotLegal);
                             }
 
@@ -1306,7 +1306,7 @@ impl ChessLogic {
                         self.white_active_2 = !self.white_active_2;
     
                         if p == Piece::P {
-                            if i==8 {
+                            if i==0 {
                                 return Err(MoveError::NotLegal);
                             }
 
@@ -1346,10 +1346,10 @@ impl ChessLogic {
                         self.white_active_2 = !self.white_active_2;
                         
                         if p == Piece::p {
-                            if i==8 {
+                            if i==7 {
                                 return Err(MoveError::NotLegal);
                             }
-                            
+
                             self.pawn_in_last_turn_b2 = Some((i,j));
                             self.half_moves_last_capture2=0;
                         }else{
