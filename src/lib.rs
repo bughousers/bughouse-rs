@@ -1,3 +1,7 @@
+//! # Bughousers
+//!
+//! A library for creating and managing a bughouse chess game.
+
 #![allow(warnings)] 
 pub mod logic;
 pub mod parse;

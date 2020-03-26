@@ -1,6 +1,14 @@
 use std::fmt;
 
 #[derive(Clone, Copy, PartialEq)]
+///Enum Class representing a Chess Piece
+/// 
+/// UX classes are the Upgraded variants of X Piece
+/// It is needed when a piece is captured bcs the captured
+/// Piece is sent to the teammate as a pawn.
+/// Capital case -> white, Lower case -> black
+/// Pawn,Rook,Knight,Bishop,Queen,King,Empty,Legal
+/// Legal and Empty are needed for printing the legal moves
 pub enum Piece {
     P,R,N,B,Q,K,E,L,
     p,r,n,b,q,k,
@@ -39,19 +47,26 @@ impl fmt::Display for Piece {
 }
 
 pub struct ChessBoard {
-    pub board: [[Piece; 8]; 8], //chess board
-    pub white_k_moved: bool,  //castle condition
-    pub black_k_moved: bool, //castle condition
-    pub white_rook_q_moved: bool, //castle queenside condition
-    pub white_rook_k_moved: bool, //castle kingside condition
-    pub black_rook_q_moved: bool, //castle queenside condition
-    pub black_rook_k_moved: bool, //castle kingside condition
+    ///Chess board as an 8x8 Piece array
+    pub board: [[Piece; 8]; 8], 
+    ///A preconditon for castling
+    pub white_k_moved: bool, 
+    ///A preconditon for castling
+    pub black_k_moved: bool, 
+    ///A preconditon for Queenside castling
+    pub white_rook_q_moved: bool,
+    ///A preconditon for Kingside castling
+    pub white_rook_k_moved: bool, 
+    ///A preconditon for Queenside castling
+    pub black_rook_q_moved: bool, 
+    ///A preconditon for Kingside castling
+    pub black_rook_k_moved: bool, 
 }
 
 
 impl ChessBoard {
 
-    //default constructor for a chess game
+    ///Default constructor for the Chessboard
     pub fn new() -> ChessBoard {
         let arr = get_init_array();
         ChessBoard {
@@ -66,13 +81,15 @@ impl ChessBoard {
         
     }
 
-    //moves piece from old i old j to i j, does not check anything
+    ///Moves piece from old i old j to i j
+    ///
+    ///Does not check if the move is legal, or if wether the i,j are out of bounds
     pub fn move_piece(&mut self,old_i: usize, old_j: usize, i:usize, j:usize) {
         self.board[i][j] = self.board[old_i][old_j];
         self.board[old_i][old_j] = Piece::E;
     }
 
-    //prints the chess board
+    ///Prints the chess board 
     pub fn print_board(&self) {
         for i in 0..8 {
             for j in 0..8 {
@@ -84,7 +101,7 @@ impl ChessBoard {
     }
 
 
-    //sets the board with the initial positions for pieces
+    ///Sets the board with the starts positions 
     pub fn set_init_array(&mut self){
         for i in 0..8 {
             self.board[1][i] = Piece::p;
@@ -111,7 +128,7 @@ impl ChessBoard {
 
 }
 
-//initial array positions board is returned
+/// Returns the start position of pieces
 pub fn get_init_array() -> [[Piece; 8]; 8] {
     let mut arr = [[Piece::E; 8]; 8];
     for i in 0..8 {

@@ -7,16 +7,27 @@ use std::cmp;
 
 
 #[derive(Clone, Copy, PartialEq)]
+///Enum class to keep track of the winner
+///
+///It can be W,B from Board 1 or 2, None or Stalemate(Patt)
 pub enum Winner {
     W1,B1,N,P,W2,B2,
 }
 
 #[derive(Clone, Copy, PartialEq)]
+///Enum class for possible movement errors, could be usefull for calls from a server
+/// 
+///NotLegal -> move is not a legal move
+///NotTurn -> not the turn of the caller
+///CannotDeploy -> the given piece cannot be deployed, e.g. the cell is not empty
+///NoPieceInPool -> the pool for needed piece is empty
+///PromotionProblem -> the promotion booleans are not set (the boolean has to be set to promote pawns)
 pub enum MoveError {
     NotLegal,NotTurn,CannotDeploy,AlreadyOver,NoPieceInPool,
     PromotionProblem,
 }
 
+///Chesslogic struct has everything needed for a Bughouse game
 pub struct ChessLogic {
     pub chess_board1: ChessBoard, //board1
     pub chess_board2: ChessBoard, //board2

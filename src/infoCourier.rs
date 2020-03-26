@@ -1,11 +1,18 @@
+
+///A module to read/generate FEN Strings
+/// 
+/// Bughousers has 2 Games running simultaneously
+/// Therefore it generates one FEN String for each Game
 pub mod infoCourier {
     use crate::logic::ChessLogic;
     use crate::logic::board;
     use crate::logic::board::Piece;
     use crate::parse::parser;
+    use crate::util::contains;
     use std;
 
-    pub fn gen_yfen(cl:& ChessLogic) -> (String,String) {
+    ///Generates the FEN String from a given Bughouse game: a given Chesslogic module
+    pub fn gen_fen(cl:& ChessLogic) -> (String,String) {
         //pieces
         //active color
         //castling rights KQkq
@@ -66,72 +73,34 @@ pub mod infoCourier {
             //check for castling rights
 
             //check for en passant
-            let mut enpassant = "a1".to_string();
+            let mut enpassant = "".to_string();
             match cl.get_pawn_in_last_turn(*board1) {
                 None => {enpassant = "-".to_string();},
                 Some((a,b)) => {
                     if a == 3 {
-                        let row = parser::ind2line(a-1).to_string();
-                        let col = parser::ind2char(b).to_string();
-                        enpassant = format!("{}{}",col,row);
+                        if let Some(col) = parser::ind2char(b) {
+                            col.to_string();
+                            enpassant = format!("{}{}",enpassant,col);
+                        }
+                        if let Some(row) = parser::ind2line(a-1) {
+                            row.to_string();
+                            enpassant = format!("{}{}",enpassant,row);
+                        }
                     }else if a == 4 {
-                        let row = parser::ind2line(a+1).to_string();
-                        let col = parser::ind2char(b).to_string();
-                        enpassant = format!("{}{}",col,row);
+                        if let Some(col) = parser::ind2char(b) {
+                            col.to_string();
+                            enpassant = format!("{}{}",enpassant,col);
+                        }
+                        if let Some(row) = parser::ind2line(a+1) {
+                            row.to_string();
+                            enpassant = format!("{}{}",enpassant,row);
+                        }
                     } 
                     else{
                         enpassant = "-".to_string();
                     }
                 },
             }
-
-            //check for castling
-            //this is used for my special case yfen
-            /*
-            let mut castling = "".to_string();
-            match find_piece(Piece::K,*board1,cl) {
-                None => {
-                    //castling.push_str("-");
-                    castling = format!("{}{}", castling, "--".to_string());
-                    //castling.push_str("-");
-                },
-                Some((a,b)) => {
-                    let vec = cl.get_legal_moves(*board1,a,b);
-                    if contains_tpl(&vec, (7,6)) {
-                        castling = format!("{}{}", castling, "K".to_string());
-                    }else{
-                        castling = format!("{}{}", castling, "-".to_string());
-                    }
-
-                    if contains_tpl(&vec, (7,2)) {
-                        castling = format!("{}{}", castling, "Q".to_string());
-                    }else{
-                        castling = format!("{}{}", castling, "-".to_string());
-                    }    
-                },
-            }
-            match find_piece(Piece::k,*board1,cl) {
-                None => {
-                    //castling.push_str("-");
-                    castling = format!("{}{}", castling, "--".to_string());
-                    //castling.push_str("-");
-                },
-                Some((a,b)) => {
-                    let vec = cl.get_legal_moves(*board1,a,b);
-                    if contains_tpl(&vec, (0,6)) {
-                        castling = format!("{}{}", castling, "k".to_string());
-                    }else{
-                        castling = format!("{}{}", castling, "-".to_string());
-                    }
-
-                    if contains_tpl(&vec, (0,2)) {
-                        castling = format!("{}{}", castling, "q".to_string());
-                    }else{
-                        castling = format!("{}{}", castling, "-".to_string());
-                    }    
-                },
-            }
-            */ 
 
             //get if king has moved 
             let x1 = cl.get_castling_rights(*board1);
@@ -187,15 +156,4 @@ pub mod infoCourier {
 
         (s1,s2)
     }
-
-    fn contains_tpl(vec: &Vec<(usize,usize)>,(i,j): (usize,usize)) -> bool {
-        for (a,b) in vec.iter() {
-            if *a==i && j==*b {
-                return true
-            }
-        }
-        return false
-    }
-
-
 }

@@ -1,6 +1,8 @@
 pub mod parser {
-    //parse method only works if the input is correct
-    pub fn parse(input: &String) -> [usize; 4] {
+    ///Parses an input such as "e2-e4" and converts into a form that Chesslogic will understand
+    /// 
+    /// Input is of form: column index,row index,-,new column index,new row index
+    pub fn parse(input: &String) -> Option<[usize; 4]> {
 
         let mut rt = [8;4];
         let mut rtc = 1;
@@ -11,11 +13,19 @@ pub mod parser {
             for c in s.chars() {
                 if c!='\n' {
                     if f {
-                        rt[rtc] = char2ind(c);
+                        if let Some(x) = char2ind(c) {
+                            rt[rtc] = x;
+                        }else{
+                            return None
+                        }
                         rtc -=1;
                         f = false;
                     }else{
-                        rt[rtc] = line2line(c);
+                        if let Some(x) = line2line(c) {
+                            rt[rtc] = x;
+                        }else{
+                            return None
+                        }
                         rtc +=3;
                     }
                 }
@@ -24,66 +34,66 @@ pub mod parser {
 
         }
 
-        rt
+        Some(rt)
     }
 
-    //converts chess column to array column
-    pub fn char2ind(a: char) -> usize {
+    ///Converts an SAN column index to array column index
+    pub fn char2ind(a: char) -> Option<usize> {
         match a {
-            'a' | 'A' => 0,
-            'b' | 'B'  => 1,
-            'c' | 'C'  => 2,
-            'd' | 'D'  => 3,
-            'e' | 'E'  => 4,
-            'f' | 'F'  => 5,
-            'g' | 'G'  => 6,
-            'h' | 'H'  => 7,
-            _ => {println!("Nonlegal input, char2ind"); 666},
+            'a' | 'A' => Some(0),
+            'b' | 'B'  => Some(1),
+            'c' | 'C'  => Some(2),
+            'd' | 'D'  => Some(3),
+            'e' | 'E'  => Some(4),
+            'f' | 'F'  => Some(5),
+            'g' | 'G'  => Some(6),
+            'h' | 'H'  => Some(7),
+            _ => None,
         }
     }
 
-    //converts array column to chess column
-    pub fn ind2char(a: usize) -> char {
+    ///Converts an array index column to SAN column index
+    pub fn ind2char(a: usize) -> Option<char> {
         match a {
-            0 => 'a',
-            1 => 'b',
-            2 => 'c',
-            3 => 'd',
-            4 => 'e',
-            5 => 'f',
-            6 => 'g',
-            7 => 'h',
-            _ => {println!("Nonlegal input, ind2char"); 'x'},
+            0 => Some('a'),
+            1 => Some('b'),
+            2 => Some('c'),
+            3 => Some('d'),
+            4 => Some('e'),
+            5 => Some('f'),
+            6 => Some('g'),
+            7 => Some('h'),
+            _ => None,
         }
     }
 
-    //convert chess line -> array line
-    pub fn line2line(a: char) -> usize {
+    ///convert a SAN line index to an array line index
+    pub fn line2line(a: char) -> Option<usize> {
         match a {
-            '1' => 7,
-            '2' => 6,
-            '3' => 5,
-            '4' => 4,
-            '5' => 3,
-            '6' => 2,
-            '7' => 1,
-            '8' => 0,
-            _ => {println!("Nonlegal input, line2line"); 666},
+            '1' => Some(7),
+            '2' => Some(6),
+            '3' => Some(5),
+            '4' => Some(4),
+            '5' => Some(3),
+            '6' => Some(2),
+            '7' => Some(1),
+            '8' => Some(0),
+            _ =>  None,
         }
     }
 
-    //converts array line to line 
-    pub fn ind2line(a: usize) -> char {
+    //converts array line  index to SAN line index
+    pub fn ind2line(a: usize) -> Option<char> {
         match a {
-            0 => '8',
-            1 => '7',
-            2 => '6',
-            3 => '5',
-            4 => '4',
-            5 => '3',
-            6 => '2',
-            7 => '1',
-            _ => {println!("Nonlegal input, ind2line"); 'x'},
+            0 => Some('8'),
+            1 => Some('7'),
+            2 => Some('6'),
+            3 => Some('5'),
+            4 => Some('4'),
+            5 => Some('3'),
+            6 => Some('2'),
+            7 => Some('1'),
+            _ => None,
         }
     }
 
