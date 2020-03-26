@@ -1486,6 +1486,8 @@ impl ChessLogic {
                                         None => {},
                                         Some(x) => {self.board2_black_capture[x] += 1},
                                     }
+                                }else{
+                                    return Err(MoveError::PromotionProblem);
                                 }
                             
                                 match self.upgrade_to1 {
@@ -1494,13 +1496,13 @@ impl ChessLogic {
                                         self.white_active_1 = !self.white_active_1; return Ok(true)},
                                     Piece::R => { self.upgrade_to1 = Piece::E; self.chess_board1.board[i][j] = Piece::UR;
                                         self.chess_board1.board[i_old][j_old] = Piece::E;
-                                        self.white_active_1 = !self.white_active_1;return Ok(true)},
+                                        self.white_active_1 = !self.white_active_1; return Ok(true)},
                                     Piece::B => { self.upgrade_to1 = Piece::E;self.chess_board1.board[i][j] = Piece::UB;
                                         self.chess_board1.board[i_old][j_old] = Piece::E;
-                                        self.white_active_1 = !self.white_active_1;return Ok(true)},
+                                        self.white_active_1 = !self.white_active_1; return Ok(true)},
                                     Piece::N => { self.upgrade_to1 = Piece::E;self.chess_board1.board[i][j] = Piece::UN;
                                         self.chess_board1.board[i_old][j_old] = Piece::E;
-                                        self.white_active_1 = !self.white_active_1;return Ok(true)},
+                                        self.white_active_1 = !self.white_active_1; return Ok(true)},
                                     _ =>  {return Err(MoveError::PromotionProblem)},
                             } 
                             }
@@ -1519,6 +1521,8 @@ impl ChessLogic {
                                         None => {},
                                         Some(x) => {self.board2_white_capture[x] += 1},
                                     }
+                                }else{
+                                    return Err(MoveError::PromotionProblem);
                                 }
 
                                 match self.upgrade_to1 {
@@ -1726,7 +1730,10 @@ impl ChessLogic {
                                         None => {},
                                         Some(x) => {self.board1_black_capture[x] += 1},
                                     }
+                                }else{
+                                    return Err(MoveError::PromotionProblem);
                                 }
+
                                 match self.upgrade_to2 {
                                     Piece::Q => { self.upgrade_to2 = Piece::E;self.chess_board2.board[i][j] = Piece::UQ;
                                         self.chess_board2.board[i_old][j_old] = Piece::E;
@@ -1759,6 +1766,8 @@ impl ChessLogic {
                                         None => {},
                                         Some(x) => {self.board1_white_capture[x] += 1},
                                     }
+                                }else{
+                                    return Err(MoveError::PromotionProblem);
                                 }
 
                                 match self.upgrade_to2 {
@@ -1857,10 +1866,14 @@ impl ChessLogic {
         match piece {
             Piece::P | Piece::p  => Some(0),
             Piece::K | Piece::k | Piece::L  | Piece::E => None ,
-            Piece::N | Piece::n | Piece::Un | Piece::UN => Some(2),
-            Piece::R | Piece::r | Piece::Ur | Piece::UR => Some(1),
-            Piece::B | Piece::b | Piece::Ub | Piece::UB => Some(3),
-            Piece::Q | Piece::q | Piece::Uq | Piece::UQ => Some(4),
+            Piece::N | Piece::n  => Some(2),
+            Piece::R | Piece::r  => Some(1),
+            Piece::B | Piece::b  => Some(3),
+            Piece::Q | Piece::q  => Some(4),
+            Piece::Un | Piece::UN
+            | Piece::Ur | Piece::UR
+            | Piece::Ub | Piece::UB
+            | Piece::Uq | Piece::UQ => Some(0),
 
         }
     }
