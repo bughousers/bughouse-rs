@@ -29,33 +29,47 @@ pub enum MoveError {
 
 ///Chesslogic struct has everything needed for a Bughouse game
 pub struct ChessLogic {
-    pub chess_board1: ChessBoard, //board1
-    pub chess_board2: ChessBoard, //board2
-    //tuple of start point offset and if bool to indicate 
-    //if it has moved
-    pawn_in_last_turn_b1: Option<(usize,usize)>, //location of last pawn move, board1
-    pawn_in_last_turn_b2: Option<(usize,usize)>, //location of last pawn move, board2
-    white_active_1: bool, //true if white is active, board1
-    white_active_2: bool, //true if white is active, board2
-    //boardX_color_capture ==
-    //board1 or 2, the captured piece has color <color>
-    //the order is P-R-N-B-Q
-    pub upgrade_to1: Piece, //check if pawn should be upgrade, board1
-    pub upgrade_to2: Piece, //"", board2
-    half_moves_last_capture1: usize, //count of half moves since last pawn move,captur, board1
-    half_moves_last_capture2: usize, //"", board2
-    movectr1: usize, //count of turns, board1
-    movectr2: usize, //"",board2
-    board1_white_capture: [u8;5], //pieces that can be deployed on board1 (white pieces)
-    board1_black_capture: [u8;5], //"",board1,black
-    board2_white_capture: [u8;5], //"",board2,white
-    board2_black_capture: [u8;5], //"",board2,black
+    ///Chessboard of game 1, aka. board1
+    pub chess_board1: ChessBoard, 
+    ///Chessboard of game 2, aka. board2
+    pub chess_board2: ChessBoard, 
+    ///The last moved pawn of board1, None if another piece has moved
+    pawn_in_last_turn_b1: Option<(usize,usize)>,
+    ///The last moved pawn of board2, None if another piece has moved
+    pawn_in_last_turn_b2: Option<(usize,usize)>,
+    ///True if white is active on board1, else false
+    white_active_1: bool, 
+    ///True if white is active on board2, else false
+    white_active_2: bool, 
+    ///The piece to upgrade to in the next pawn, board1
+    pub upgrade_to1: Piece, 
+    ///The piece to upgrade to in the next pawn, board2
+    pub upgrade_to2: Piece, 
+    ///Count of half moves since last pawn move or piece capture, board1
+    half_moves_last_capture1: usize, 
+    ///Same but for board2
+    half_moves_last_capture2: usize, 
+    ///Number of moves in board1
+    movectr1: usize, 
+    ///Same but for board2
+    movectr2: usize, 
+
+   
+    ///Pieces that can be deployed on board1 (white pieces),the order is P-R-N-B-Q
+    board1_white_capture: [u8;5], 
+    ///Same but for board1,black
+    board1_black_capture: [u8;5], 
+    ///Same but for board2,white
+    board2_white_capture: [u8;5], 
+    ///Same but for board2,black
+    board2_black_capture: [u8;5],
+    ///A field to save the winner 
     winner: Winner,
 }
 
 impl ChessLogic {
 
-    //sets both games to initial chess state
+    ///Sets both games to initial state (none of the games have started)
     pub fn refresh(&mut self){
         self.chess_board1.set_init_array();
        
@@ -92,7 +106,9 @@ impl ChessLogic {
         self.winner= Winner::N; 
     }
 
-    //prints one of the boards
+    ///Prints one of the boards
+    /// # Arguments
+    /// * `board1` - true if board1, false if board 2
     pub fn print(&self,board1:bool){
         if board1{
             self.chess_board1.print_board();
@@ -104,7 +120,11 @@ impl ChessLogic {
 
     }
 
-    //return if the king has moved
+    ///Return if the king has moved
+    /// # Arguments
+    /// * `board1` - true if board1, false if board2
+    /// * `white` - true if white, false if black
+
     pub fn get_if_king_moved(&self,board1:bool,white:bool) -> bool{
         if board1 {
             if white{
@@ -121,7 +141,7 @@ impl ChessLogic {
         }
     }
 
-    //returns capture pools
+    ///Returns the capture pools
     pub fn get_pools(&self) -> ([u8;5],[u8;5],[u8;5],[u8;5]){
         (
             self.board1_white_capture, 
@@ -131,7 +151,9 @@ impl ChessLogic {
         )
     }
 
-    //get a bool that is true if white is active
+    ///Get a bool that is true if white is active
+    ///# Arguments
+    /// * `board1` - true if board1, false if board2
     pub fn get_white_active(&self, board1:bool) -> bool{
         match board1 {
             true => self.white_active_1,
@@ -139,7 +161,9 @@ impl ChessLogic {
         }
     }
 
-    //get number of movements
+    ///Get number of played turns
+    /// # Arguments
+    /// * `board1` - true if board1, false if board2
     pub fn get_movectr(&self, board1:bool) -> usize {
         match board1 {
             true => self.movectr1,
@@ -147,7 +171,9 @@ impl ChessLogic {
         }
     }
 
-    //get half moves since last capture/pawn movement
+    ///Get half moves since last capture or pawn movement
+    /// # Arguments
+    /// * `board1` - true if board1, false if board2
     pub fn get_half_moves(&self, board1:bool) -> usize {
         match board1 {
             true => self.half_moves_last_capture1,
@@ -155,7 +181,11 @@ impl ChessLogic {
         }
     }
 
-    //returns captures pieces, tandem
+    ///Returns the captured pieces
+    ///  # Arguments
+    /// * `board1` - true if board1, false if board2
+    /// * `white` - true if white, false if black
+    /// * `i` - index for the pool, can be generated with box_index
     pub fn get_captured_piece(&self, board1:bool,white:bool, i:usize) -> u8 {
         if board1 {
             if white { 
@@ -172,7 +202,12 @@ impl ChessLogic {
         }
     }
 
-        //returns captures pieces, tandem
+        ///Sets the captured pieces after a piece capture
+        /// # Arguments
+        /// * `board1` - true if board1, false if board2
+        /// * `white` - true if white, false if black
+        /// * `i` - index for the pool, can be generated with box_index
+        /// * `inc` - if inc then the piece count in the pool will be increased by 1 else decreased by 1
         fn set_captured_piece(&mut self, board1:bool,white:bool, i:usize,inc:bool){
             if board1 {
                 if white { 
@@ -205,7 +240,9 @@ impl ChessLogic {
             }
         }
 
-    //needed for enpassant encoding
+    ///Returns the last moved pawn, needed for enpassant encoding
+    /// # Arguments
+    /// * `board1` - true if board1, false if board2
     pub fn get_pawn_in_last_turn(&self, board1:bool) -> Option<(usize,usize)> {
         match board1 {
             true => self.pawn_in_last_turn_b1,
@@ -213,20 +250,29 @@ impl ChessLogic {
         }
     }
 
-    //return the winner type (white,black,none ..)
+    ///Returns the winner type (white,black,none ...)
+    /// * `board1` - true if board1, false if board2
     pub fn get_winner(&self, board1:bool) -> Winner {
         self.winner
     }
 
-    //ONLY FOR TESTING
-    pub fn set_pawn_in_last_turn(&mut self, board1:bool, x:Option<(usize,usize)>) {
+    ///Sets the pawn_in_last_turn field
+    /// 
+    /// only for testing, movemaker and deploy piece update this field
+    /// # Arguments
+    /// * `board1` - true if board1, else false
+    /// * `x` - location of the pawn_in_last_turn, can be none
+    fn set_pawn_in_last_turn(&mut self, board1:bool, x:Option<(usize,usize)>) {
         match board1 {
             true => self.pawn_in_last_turn_b1 = x,
             false => self.pawn_in_last_turn_b2 = x,
         }
     }
 
-    //print legal moves with input of legal moves
+    ///Print legal moves with input of legal moves
+    /// # Arguments
+    /// * `board1` - true if board1, else false
+    /// * `locs` - vector of legal moves
     pub fn print_w_legal(&mut self,board1:bool,locs: &Vec<(usize,usize)>){
         //its highly probably that a piece will have 8-16 legal moves
         let mut vec = Vec::with_capacity(8);
@@ -274,6 +320,9 @@ impl ChessLogic {
         println!("------------------------");
     }
 
+    /// Default constructor for chesslogic
+    /// 
+    /// Initializes the game with initial positions 
     pub fn new() -> ChessLogic {
         ChessLogic{
             chess_board1: ChessBoard::new(), 
@@ -296,7 +345,11 @@ impl ChessLogic {
         }
     }
 
-    //returns a vector of legal moves for the board, and for the location
+    ///Returns a vector of legal moves for the board, and for the location
+    /// # Arguments
+    /// * `board1` - true if board1, else false
+    /// * `old_i` - row index of the piece
+    /// * `old_j` - col index of the piece
     pub fn get_legal_moves(&mut self,board1:bool, old_i:usize, old_j:usize)
     -> Vec<(usize,usize)>
     {
@@ -470,7 +523,11 @@ impl ChessLogic {
         }
     }
 
-    //returns if the location on the given board is empty
+    ///Returns if the location on the given board is empty
+    /// # Arguments
+    /// * `board1` - true if board1, else false
+    /// * `i` - row index
+    /// * `j` - col index
     fn is_empty(&self, board1:bool, i:usize, j:usize) -> bool {
         if board1 {
             match self.chess_board1.board[i][j] {
@@ -485,7 +542,13 @@ impl ChessLogic {
         }
     }
 
-    //returns if the location on the given board is an enemy piece (needs to know if the caller is white)
+    ///Returns if the location on the given board is an enemy piece (needs to know if the caller is white)
+    /// # Arguments 
+    /// * `board1` - true if board1, else false
+    /// * `white` - true if white, else false
+    /// * `i` - row index of the other piece
+    /// * `j` - col index of the other piece
+    /// E and L are never the enemies
     fn is_enemy(&self, board1:bool,white:bool, i:usize, j:usize) -> bool {
             if white {
                 //true for black, false for white
@@ -519,7 +582,11 @@ impl ChessLogic {
        
     }
 
-    //return bool==given piece is white==true else false
+    ///Return a bool that is true if the given piece is white, else false
+    /// # Arguments
+    /// * `white` - true if white, else false
+    /// * `i` - row index of the other piece
+    /// * `j` - col index of the other piece
     fn is_white(&self, board1:bool, i:usize, j:usize) -> bool {
             match self.get_board_n(board1).board[i][j] {
                 Piece::E => false,
@@ -534,7 +601,11 @@ impl ChessLogic {
             }
     }
 
-    //gets legal moves on a line
+    ///Gets legal moves on a line
+    /// # Argumnets
+    /// * `board1` - true if board1 else false
+    /// * `i` - row index of the piece
+    /// * `j` - col index of the piece
     fn horizontal_mov(&self,board1:bool, i:usize, j:usize) -> Vec<(usize,usize)> {
         let mut vec = Vec::with_capacity(4);
         let mut jc = j;
@@ -564,7 +635,11 @@ impl ChessLogic {
         vec
     }
 
-      //gets legal moves on a column, horizontal_move but jc is changed with ic
+    ///Gets legal moves on a column, horizontal_move but jc is changed with ic
+    /// # Arguments
+    /// * `board1` - true if board1 else false
+    /// * `i` - row index of the piece
+    /// * `j` - col index of the piece
     fn vertical_mov(&self,board1:bool, i:usize, j:usize)  -> Vec<(usize,usize)>{
         let mut vec = Vec::with_capacity(4);
         let mut ic = i;
@@ -594,14 +669,22 @@ impl ChessLogic {
         vec
     }
 
-    //makes a cross with vertical and horizontal moves 
+    ///Makes a cross with vertical and horizontal moves 
+    /// # Arguments
+    /// * `board1` - true if board1 else false
+    /// * `i` - row index of the piece
+    /// * `j` - col index of the piece
     fn cross_mov(&self,board1:bool, i:usize, j:usize) -> Vec<(usize,usize)> {
         let mut vec = self.vertical_mov(board1,i,j);
         vec.append(&mut self.horizontal_mov(board1,i,j));
         vec
     }
 
-    //iterates for [+n,-n] ; [+n,-n] combinations 1..7 and gets legal moves
+    ///Iterates for [+n,-n] ; [+n,-n] combinations for 1..7 and gets legal moves
+    /// # Arguments
+    /// * `board1` - true if board1 else false
+    /// * `i` - row index of the piece
+    /// * `j` - col index of the piece
     fn x_mov(&self,board1:bool, i:usize, j:usize)  -> Vec<(usize,usize)>{
         let mut vec = Vec::with_capacity(4);
         let mut ic = i;
@@ -669,8 +752,11 @@ impl ChessLogic {
         vec
     }
 
-    //get possible horse moves, combinations of [+2,-2] ; [-1,+1] for all of the valids,
-    //can jump
+    ///Get possible horse moves, combinations of [+2,-2] ; [-1,+1] for all of the valid locations
+    /// # Arguments
+    /// * `board1` - true if board1 else false
+    /// * `i` - row index of the piece
+    /// * `j` - col index of the piece
     fn horse_jump(&self, board1:bool, i:usize, j:usize) -> Vec<(usize,usize)> {
         //all possible combinations of +2, -2, +1, -1 for each square
         let twoway = [-2,2];
@@ -719,7 +805,11 @@ impl ChessLogic {
         vec
     }
 
-    //returns the piece in given board and location
+    ///Returns the piece in given board and location
+    /// # Arguments
+    /// * `board1` - true if board1 else false
+    /// * `i` - row index of the piece
+    /// * `j` - col index of the piece
     pub fn get_piece(&self, chessboard1:bool, i:usize, j:usize) -> Piece {
         match chessboard1 {
             true => self.chess_board1.board[i][j],
@@ -727,8 +817,11 @@ impl ChessLogic {
         }
     }
 
-    //converts the input piece to right color
-    //also works for upgraded pieces
+    ///Converts the input piece to right color
+    /// # Arguments
+    /// * `board1` - true if board1 else false
+    /// * `iswhite` - true if the piece is to be converted to white else false
+    /// * `piece` - input piece
     pub fn get_piece_w_en(&self, iswhite:bool, piece:Piece) -> Piece {
         match piece {
             Piece::p | Piece::P => if iswhite {Piece::p} else {Piece::P} ,
@@ -743,8 +836,11 @@ impl ChessLogic {
         }
     }
 
-    //converts the input piece to right color, but returns the upgraded if it exists
-    //also works for upgraded pieces
+    ///Converts the input piece to right color, but returns the upgraded if it exists
+    /// # Arguments
+    /// * `board1` - true if board1 else false
+    /// * `iswhite` - true if the piece is to be converted to white else false
+    /// * `piece` - input piece
     pub fn get_piece_w_upgrade_en(&self, iswhite:bool, piece:Piece) -> Piece {
         match piece {
             Piece::p | Piece::P => if iswhite {Piece::p} else {Piece::P} ,
@@ -759,7 +855,12 @@ impl ChessLogic {
         }
     }
 
-    //iswhite <=> the unit on the square is white
+    ///Checks wether the given location is under attack
+    /// # Arguments
+    /// * `board1` - true if board1 else false
+    /// * `iswhite` - true if the piece if checking for white else false
+    /// * `i` - row index
+    /// * `j` - col index
     pub fn is_attacked(&mut self, board1:bool, iswhite:bool, i:usize,j:usize) -> bool {
         //remove yourself from board (you could be blocking other places)
         //check for pawns
@@ -1001,7 +1102,10 @@ impl ChessLogic {
         false
     }
 
-    //checks if the given index is in the legal bounds
+    ///checks if the given indices are in the legal bounds
+    /// # Arguments
+    /// * `a` - row index
+    /// * `b` - col index
     fn valid(&self, a: i32, b: i32) -> bool {
         if a >= 0 && a <= 7 && b >= 0 && b<= 7 {
             return true
@@ -1010,7 +1114,11 @@ impl ChessLogic {
         }
     }
 
-    //checks if the given location has the Piece piece
+    ///Checks if the given location has the given piece
+    /// # Arguments
+    /// * `piece` - piece to check
+    /// * `a` - row index
+    /// * `b` - col index
     fn check_for_piece(&self,board1:bool, piece:Piece, i : i32, j:i32) -> bool {
         if !self.valid(i,j){
             println!("The index is not valid, this idicates a bug");
@@ -1025,7 +1133,9 @@ impl ChessLogic {
         }
     }
 
-    //empties the whole board
+    ///Empties the whole board
+    /// # Arguments
+    /// * `board1` - true if board1 else false
     pub fn all_empty(&mut self,board1:bool) {
         for i in 0..8 {
             for j in 0..8 {
@@ -1040,7 +1150,12 @@ impl ChessLogic {
     }
 
   
-    //sets the piece on the given location
+    ///Sets the piece on the given location
+    /// # Arguments
+    /// * `board1` - true if board1 else false
+    /// * `piece` - the piece to set
+    /// * `i` - row index
+    /// * `j` - col index
     fn set_piece(&mut self,board1:bool,piece:Piece,i:usize,j:usize){
         if board1{
             self.chess_board1.board[i][j] = piece;
@@ -1049,7 +1164,13 @@ impl ChessLogic {
         }
     }
 
-    //check if the king can move
+    ///Checks if the king can  
+    /// # Arguments
+    /// * `board1` - true if board1 else false
+    /// * `i` - row index
+    /// * `j` - col index
+    /// 
+    /// In Bughouse kind move to a location which is attacked
     fn king_move(&mut self, board1:bool, i:usize,j:usize) -> Vec<(usize,usize)>{
         let mut a = [-1,0,1];
         let mut b = [-1,0,1];
@@ -1176,10 +1297,15 @@ impl ChessLogic {
         }
     }
 
-    //rly important detail
-    //in tandem you can move your pinned piece, then the enemy can capture 
-    //your king
-    //checks if you can move from i_old, j_old to i,j
+    ///Checks if you can move your piece
+    /// # Arguments
+    /// * `board1` - true if board1 else false
+    /// * `old_i` - oldrow index
+    /// * `old_j` - old col index
+    /// * `i` - row index, where the piece wants to move
+    /// * `j` - col index, same as above
+    ///in tandem you can move your pinned piece, then the enemy can capture your king
+    ///checks if you can move from i_old, j_old to i,j
     pub fn legality_check(&mut self, board1:bool, i_old:usize,j_old:usize,i:usize,j:usize) -> bool{
         
         match &self.get_board(board1).board[i_old][j_old] {
@@ -1196,7 +1322,20 @@ impl ChessLogic {
         }
     }
 
-    //deploy a piece on your field as a turn 
+    ///Deploys a piece on your field as a turn returns an Error if you cant deploy 
+    /// # Arguments
+    /// * `board1` - true if to deploy on board1 else false
+    /// * `white` - true if the piece to be deployed white else false
+    /// * `p` - the piece to deploy
+    /// * `i` - the row to deploy
+    /// * `j` - the col to deploy
+    /// 
+    /// Deploys a piece at the location (i,j) if the location (i,j) is within bounds, empty and it is legal to deploy at index (i,j)
+    /// For example a white pawn, P cannot be deployed to (0,_). It also checks if the deployable piece pool has
+    /// enough pieces of the type p (>=1 p:Piece).
+    /// It updates: pools, winner, count of turns, count of half-turns since last capture.
+    /// A king cannot be deployed but if the rook is deployed on the initial position it is possible to castle, it also updated by the deploy piece.
+    /// A deploy cannot terminate the game, since you cannot capture the king with a deploy. The game terminates only when a king is captured, a plyer resigns, or stalemate occurs which is prob. never going to happen.
     pub fn deploy_piece(&mut self,board1:bool,white:bool,p:Piece,i:usize,j:usize) -> Result<bool,MoveError> {
         //deploy the piece only if it is legal to play
         if self.winner!=Winner::N {
@@ -1389,7 +1528,24 @@ impl ChessLogic {
     }
 
 
-    //do not forget the side effects while testing
+
+    ///Moves the piece from i_old,j_old to i,j if the move is legal
+    /// # Arguments
+    /// * `board1` - true if to deploy on board1 else false  
+    /// * `i_old` - the row before the move
+    /// * `j_old` - the col before the move
+    /// * `i` - the row to move
+    /// * `j` - the col to move
+    /// 
+    /// Moves the piece p from (i_old,j_old) to (i,j) if (i_old,j_old) has a piece and (i,j) is within bounds and legal moving to.
+    /// Pinned pieces can move in bughouse, and the king can be captured, meaning that the king can move into a square that is attacked
+    /// Function will return an error if a winner was already set (meaning not equal to Winner::N). 
+    /// The function updates castling rights on both sides for both colors, if the callers color is not equal to the active color
+    /// the function will return an error. It also updates half-turns and total turns. 
+    /// In case of a promotion the fields upgrade_to1 or upgrade_to2 has to be set BEFORE, after a successful promotion the corresponding field
+    /// will be reset (set to Piece::E), if the field is not set to a legal piece the function will return an Error
+    /// So the promotion precondition has to be fulfilled before calling the movemaker function. A captures piece is automatically sent to the 
+    /// teammates deployable pieces pool
     pub fn movemaker(&mut self, board1:bool, i_old:usize,j_old:usize,i:usize,j:usize) -> Result<bool,MoveError> {
         if self.winner!=Winner::N {
             return Err(MoveError::AlreadyOver)
@@ -1871,7 +2027,12 @@ impl ChessLogic {
         }
     }
 
-    //get the index of the piece on the captured pieces array
+    ///Get the index of the piece on the captured pieces array
+    /// # Arguments 
+    /// * `piece` - the index of the given piece
+    /// 
+    /// The upgraded pieces will be sent over as pawns,
+    /// Did not want to import hashtable for such a trivial example
     pub fn box_index(&self, piece:Piece) -> Option<usize> {
         //P-R-N-B-Q
         match piece {
@@ -1889,8 +2050,11 @@ impl ChessLogic {
         }
     }
 
-    //stub
-    //TODO: finish_up function
+
+    ///Sets the winner, should only be called through movemaker/deploy piece
+    /// # Arguments 
+    /// * `p` - a Piece to indicate which King is captures
+    /// * `board1` - true if board1 else false
     fn finish_up(&mut self, p:Piece, board1:bool){
         if p==Piece::K {
             if board1 {
@@ -1907,6 +2071,30 @@ impl ChessLogic {
         }
     }
 
+    /// A function for a player to resign
+    /// # Arguments
+    /// * `board1` - true if a player from board1 resigns else false
+    /// * `white` - true if white resigns, else false
+    pub fn resign(&mut self,board1:bool,white:bool){
+        if board1 {
+            if white {
+                self.winner=Winner::B1;
+            }else{
+                self.winner=Winner::W1;
+            }
+        }else{
+            if white {
+                self.winner=Winner::B2;
+            }else{
+                self.winner=Winner::W2;
+            }
+        }
+    }
+
+    ///A function to check if there is a stalemate and sets the winner to P(att)
+    /// # Arguments
+    /// * `board1` - true if a  board1 else false 
+    /// * `white` - true if white  else false
     pub fn check_patt(&mut self,board1:bool, white:bool) -> bool {
         let mut pic = Piece::E;
         if white { pic = Piece::K; } else { pic = Piece::k; }
@@ -1943,6 +2131,12 @@ impl ChessLogic {
         return false
     }
 
+
+    ///A function to check if the pool for a player is empty 
+    ///Needed for stalemate check
+    /// # Arguments
+    /// * `board1` - true if a  board1 else false 
+    /// * `white` - true if white  else false
     fn pool_empty(&self, board1:bool,white:bool) -> bool {
         for i in 0..5 {
             if board1 {
@@ -1962,6 +2156,11 @@ impl ChessLogic {
         true
     }
 
+    ///A function to send a piece from one teammate to another
+    ///Needed for stalemate check
+    /// # Arguments
+    /// * `board1` - true if the player is from board1 else false 
+    /// * `white` - true if player is white  else false
     fn recv_piece(&mut self, board1:bool, white:bool,p:Piece){
         let i = self.box_index(p);
         if let Some(x) = i { 
@@ -1981,6 +2180,11 @@ impl ChessLogic {
         }
     }
 
+    ///A function to find a piece on a board, returns the first piece found if there are more than 1 of the same type
+    ///Inteded use is to find the kings
+    /// # Arguments
+    /// * `p` - the piece to be searched
+    /// * `board1` - true if the player is from board1 else false 
     pub fn find_piece(&self, p: Piece, board1:bool) -> Option<(usize,usize)> {
         for i in 0..8 {
             for j in 0..8 {
@@ -1999,6 +2203,9 @@ impl ChessLogic {
         None 
     }
 
+    ///Returns the castling rights
+    /// # Arguments
+    /// * `board1` - true if board1 else false 
     pub fn get_castling_rights(&self,board1:bool) -> [bool;4] {
         let mut x = [false;4];
         x[0] = self.get_board_n(board1).white_rook_k_moved;
@@ -2008,6 +2215,10 @@ impl ChessLogic {
         return x
     }
 
+    ///A function the set the promotion field (to_upgrade1-2), corrects type into some extent
+    /// # Arguments
+    /// * `board1` - true if board1 else false 
+    /// * `p` - the piece to be promoted to pawn -> p:Piece
     pub fn set_promotion(&mut self, board1:bool, p:Piece) -> bool {
         if board1 {
             match p {
@@ -2029,6 +2240,9 @@ impl ChessLogic {
         return true 
     }
 
+    /// A function to reset the promotion to Piece::E
+    /// # Arguments
+    /// * `board1` - true if board1 else false 
     pub fn reset_promotion(&mut self, board1:bool) {
         if board1 {
             self.upgrade_to1=Piece::E;

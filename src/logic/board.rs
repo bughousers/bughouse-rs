@@ -3,11 +3,11 @@ use std::fmt;
 #[derive(Clone, Copy, PartialEq)]
 ///Enum Class representing a Chess Piece
 /// 
-/// UX classes are the Upgraded variants of X Piece
+/// UX enums are the Upgraded variants of X Piece
 /// It is needed when a piece is captured bcs the captured
 /// Piece is sent to the teammate as a pawn.
 /// Capital case -> white, Lower case -> black
-/// Pawn,Rook,Knight,Bishop,Queen,King,Empty,Legal
+/// Pawn, Rook, Knight, Bishop, Queen, King, Empty, Legal
 /// Legal and Empty are needed for printing the legal moves
 pub enum Piece {
     P,R,N,B,Q,K,E,L,
