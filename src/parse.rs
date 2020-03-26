@@ -1,11 +1,11 @@
 pub mod parser {
     //parse method only works if the input is correct
     pub fn parse(input: &String) -> [usize; 4] {
+
         let mut rt = [8;4];
         let mut rtc = 1;
-        
-        
         let mut splt = input.split("-");
+
         for s in splt {
             let mut f = true;
             for c in s.chars() {
@@ -23,12 +23,11 @@ pub mod parser {
             }
 
         }
-        //for i in rt.iter(){
-        //    println!("{}",i);
-        //}
+
         rt
     }
 
+    //converts chess column to array column
     pub fn char2ind(a: char) -> usize {
         match a {
             'a' | 'A' => 0,
@@ -43,6 +42,7 @@ pub mod parser {
         }
     }
 
+    //converts array column to chess column
     pub fn ind2char(a: usize) -> char {
         match a {
             0 => 'a',
@@ -53,10 +53,11 @@ pub mod parser {
             5 => 'f',
             6 => 'g',
             7 => 'h',
-            _ => {println!("Nonlegal input, char2ind"); 'x'},
+            _ => {println!("Nonlegal input, ind2char"); 'x'},
         }
     }
 
+    //convert chess line -> array line
     pub fn line2line(a: char) -> usize {
         match a {
             '1' => 7,
@@ -67,10 +68,11 @@ pub mod parser {
             '6' => 2,
             '7' => 1,
             '8' => 0,
-            _ => {println!("Nonlegal input, char2ind"); 666},
+            _ => {println!("Nonlegal input, line2line"); 666},
         }
     }
 
+    //converts array line to line 
     pub fn ind2line(a: usize) -> char {
         match a {
             0 => '8',
@@ -81,7 +83,7 @@ pub mod parser {
             5 => '3',
             6 => '2',
             7 => '1',
-            _ => {println!("Nonlegal input, char2ind"); 'x'},
+            _ => {println!("Nonlegal input, ind2line"); 'x'},
         }
     }
 
