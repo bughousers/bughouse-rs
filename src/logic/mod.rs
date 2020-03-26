@@ -1996,6 +1996,35 @@ impl ChessLogic {
         x[3] = self.get_board_n(board1).black_rook_q_moved;
         return x
     }
+
+    pub fn set_promotion(&mut self, board1:bool, p:Piece) -> bool {
+        if board1 {
+            match p {
+                Piece::Q | Piece::UQ => self.upgrade_to1 = Piece::Q, 
+                Piece::B | Piece::UB => self.upgrade_to1 = Piece::B, 
+                Piece::R | Piece::UR => self.upgrade_to1 = Piece::R, 
+                Piece::N | Piece::UN => self.upgrade_to1 = Piece::N, 
+                _ => {return false},
+            }
+        }else{
+            match p {
+                Piece::q | Piece::Uq => self.upgrade_to2 = Piece::q, 
+                Piece::b | Piece::Ub => self.upgrade_to2 = Piece::b, 
+                Piece::r | Piece::Ur => self.upgrade_to2 = Piece::r, 
+                Piece::n | Piece::Un => self.upgrade_to2 = Piece::n, 
+                _ => {return false},
+            }
+        }
+        return true 
+    }
+
+    pub fn reset_promotion(&mut self, board1:bool) {
+        if board1 {
+            self.upgrade_to1=Piece::E;
+        }else{
+            self.upgrade_to2=Piece::E;
+        }
+    }
     
 }
 
