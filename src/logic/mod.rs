@@ -13,7 +13,7 @@ pub enum Winner {
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum MoveError {
-    NotLegal,NotTurn,NeedsPromotion,CannotDeploy,AlreadyOver,NoPieceInPool,
+    NotLegal,NotTurn,CannotDeploy,AlreadyOver,NoPieceInPool,
     PromotionProblem,
 }
 
