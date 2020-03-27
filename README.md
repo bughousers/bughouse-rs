@@ -31,8 +31,8 @@ In case a pawn is to be promoted, the movemaker function checks a specific field
 pub fn set_promotion(&mut self, board1:bool, p:Piece)
 ```
 If you do not deploy a piece you need play a piece. The movemaker checks if the move is legal, then the function updates all the required fields and applies the move; otherwise, it returns an error.
-The caller must specify the board and the location of the piece **(i_old,j_old)** and the new location of the piece **(i,j)** after the move.
-The indices do not correspond the **SAN** notation. **(0,0)** is the upper-left corner (is the black rook) and **(7,7)** is the lower-right corner (is the white rook)
+The caller must specify the board and the location of the piece *(i_old,j_old)* and the new location of the piece *(i,j)* after the move.
+The indices do not correspond the *SAN* notation. *(0,0)* is the upper-left corner (is the black rook) and *(7,7)* is the lower-right corner (is the white rook)
 ```rust
 pub fn movemaker(&mut self, board1:bool, i_old:usize,j_old:usize,i:usize,j:usize) -> Result<bool,MoveError>
 ```

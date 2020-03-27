@@ -105,41 +105,29 @@ pub mod infoCourier {
             //get if king has moved 
             let x1 = cl.get_castling_rights(*board1);
             let mut castling = "".to_string();
-            if cl.get_if_king_moved(*board1,true) {
                 if x1[0] {
                     castling = format!("{}{}", castling, "K".to_string());
                 }else{
                     castling = format!("{}{}", castling, "-".to_string());
                 }
+
                 if x1[1] {
                     castling = format!("{}{}", castling, "Q".to_string());
                 }else{
                     castling = format!("{}{}", castling, "-".to_string());
                 }
 
-            }else{
-                castling = format!("{}{}", castling, "-".to_string());
-                castling = format!("{}{}", castling, "-".to_string());
-            }
-
-
-            if cl.get_if_king_moved(*board1,false) {
                 if x1[2] {
                     castling = format!("{}{}", castling, "k".to_string());
                 }else{
-                    castling = format!("{}{}", castling, "q".to_string());
-                }
-                if x1[3] {
                     castling = format!("{}{}", castling, "-".to_string());
+                }
+
+                if x1[3] {
+                    castling = format!("{}{}", castling, "q".to_string());
                 }else{
                     castling = format!("{}{}", castling, "-".to_string());
                 }
-                
-            
-            }else{
-                castling = format!("{}{}", castling, "-".to_string());
-                castling = format!("{}{}", castling, "-".to_string());   
-            }
 
 
             //get halfturns
@@ -155,5 +143,10 @@ pub mod infoCourier {
         }
 
         (s1,s2)
+    }
+
+
+    pub fn read_fen(s1:& String,s2:& String) -> ChessLogic {
+        return ChessLogic::new();
     }
 }

@@ -19,7 +19,7 @@ fn deploying_pieces_W_fen(){
     assert!(cl.deploy_piece(true,true,Piece::P,4,4)==Ok(true));
     let mut a = gen_fen(&mut cl);
     cl.print(true);
-    let mut st = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPPPPPP/RNBQKBNR b ---- e3 0 1".to_string();
+    let mut st = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPPPPPP/RNBQKBNR b KQkq e3 0 1".to_string();
     match a {
         (b,c) => {
             println!("{}",b);println!("{}",c);
@@ -31,7 +31,7 @@ fn deploying_pieces_W_fen(){
     assert!(cl.deploy_piece(true,false,Piece::r,3,4)==Ok(true));
     let mut a = gen_fen(&mut cl);
     cl.print(true);
-    let mut st = "rnbqkbnr/pppppppp/8/4r3/4P3/8/PPPPPPPP/RNBQKBNR w ---- - 1 2".to_string();
+    let mut st = "rnbqkbnr/pppppppp/8/4r3/4P3/8/PPPPPPPP/RNBQKBNR w KQkq - 1 2".to_string();
     match a {
         (b,c) => {
             println!("{}",b);println!("{}",c);
@@ -891,7 +891,7 @@ fn up(){
 fn trivial_yfen(){
     let mut cl =ChessLogic::new();
     let mut a = gen_fen(&mut cl);
-    let mut st = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w ---- - 0 1".to_string();
+    let mut st = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1".to_string();
     match a {
         (b,c) => {
             println!("{}",b);println!("{}",c);
@@ -902,7 +902,7 @@ fn trivial_yfen(){
 
     cl.movemaker(true,6,4,4,4);
     a = gen_fen(&mut cl);
-    st = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b ---- e3 0 1".to_string();
+    st = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1".to_string();
     match a {
         (b,c) => {
             println!("{}",b);println!("{}",c);
@@ -914,7 +914,7 @@ fn trivial_yfen(){
 
     cl.movemaker(true,1,2,3,2);
     a = gen_fen(&mut cl);
-    st = "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w ---- c6 0 2".to_string();
+    st = "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2".to_string();
     match a {
         (b,c) => {
             println!("{}",b);println!("{}",c);
@@ -926,7 +926,7 @@ fn trivial_yfen(){
 
     cl.movemaker(true,7,6,5,5);
     a = gen_fen(&mut cl);
-    st = "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b ---- - 1 2".to_string();
+    st = "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2".to_string();
     match a {
         (b,c) => {
             println!("{}",b);println!("{}",c);

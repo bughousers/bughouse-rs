@@ -2208,10 +2208,10 @@ impl ChessLogic {
     /// * `board1` - true if board1 else false 
     pub fn get_castling_rights(&self,board1:bool) -> [bool;4] {
         let mut x = [false;4];
-        x[0] = self.get_board_n(board1).white_rook_k_moved;
-        x[1] = self.get_board_n(board1).white_rook_q_moved;
-        x[2] = self.get_board_n(board1).black_rook_k_moved;
-        x[3] = self.get_board_n(board1).black_rook_q_moved;
+        x[0] = !self.get_board_n(board1).white_rook_k_moved && !self.get_board_n(board1).white_k_moved;
+        x[1] = !self.get_board_n(board1).white_rook_q_moved && !self.get_board_n(board1).black_k_moved;
+        x[2] = !self.get_board_n(board1).black_rook_k_moved && !self.get_board_n(board1).white_k_moved;
+        x[3] = !self.get_board_n(board1).black_rook_q_moved && !self.get_board_n(board1).black_k_moved;
         return x
     }
 
