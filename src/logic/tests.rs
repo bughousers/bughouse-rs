@@ -5,6 +5,8 @@ use crate::infoCourier::infoCourier::gen_fen;
 use crate::infoCourier::infoCourier::*;
 use crate::util::contains;
 use crate::logic::MoveError;
+use crate::logic::board::get_init_array;
+
 
 
 #[test]
@@ -41,6 +43,22 @@ fn deploying_pieces_W_fen(){
     }
 }
 
+#[test]
+fn read_fn(){
+    let mut x = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq e3 0 1".to_string();
+    let mut arr = "".to_string();
+    let mut a = read_fen(&x,&"".to_string(),&arr,&arr,&arr,&arr);
+    x = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b ---- - 0 1".to_string();
+    arr = "".to_string();
+    if let Some(mut a) = read_fen(&x,&x.to_string(),&arr,&arr,&arr,&arr){
+        a.chess_board1.print_board();
+        assert!(a.chess_board1.board==get_init_array());
+        assert!(a.chess_board2.board==get_init_array());
+    }else{
+        assert!(false);
+    }
+  
+}
 
 #[test]
 fn is_move_legal(){

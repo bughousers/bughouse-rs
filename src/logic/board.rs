@@ -128,32 +128,34 @@ impl ChessBoard {
 
 }
 
-/// Returns the start position of pieces
-pub fn get_init_array() -> [[Piece; 8]; 8] {
-    let mut arr = [[Piece::E; 8]; 8];
-    for i in 0..8 {
-        arr[1][i] = Piece::p;
-        arr[6][i] = Piece::P;
-    }
-        arr[7][0] = Piece::R;
-        arr[7][1] = Piece::N;
-        arr[7][2] = Piece::B;
-        arr[7][3] = Piece::Q;
-        arr[7][4] = Piece::K;
-        arr[7][5] = Piece::B;
-        arr[7][6] = Piece::N;
-        arr[7][7] = Piece::R;
-        arr[0][0] = Piece::r;
-        arr[0][1] = Piece::n;
-        arr[0][2] = Piece::b;
-        arr[0][3] = Piece::q;
-        arr[0][4] = Piece::k;
-        arr[0][5] = Piece::b;
-        arr[0][6] = Piece::n;
-        arr[0][7] = Piece::r;
+    /// Returns the start position of pieces
+    pub fn get_init_array() -> [[Piece; 8]; 8] {
+        let mut arr = [[Piece::E; 8]; 8];
+            for i in 0..8 {
+                arr[1][i] = Piece::p;
+                arr[6][i] = Piece::P;
+            }
+                arr[7][0] = Piece::R;
+                arr[7][1] = Piece::N;
+                arr[7][2] = Piece::B;
+                arr[7][3] = Piece::Q;
+                arr[7][4] = Piece::K;
+                arr[7][5] = Piece::B;
+                arr[7][6] = Piece::N;
+                arr[7][7] = Piece::R;
+                arr[0][0] = Piece::r;
+                arr[0][1] = Piece::n;
+                arr[0][2] = Piece::b;
+                arr[0][3] = Piece::q;
+                arr[0][4] = Piece::k;
+                arr[0][5] = Piece::b;
+                arr[0][6] = Piece::n;
+                arr[0][7] = Piece::r;
+    
+            arr
+        }
 
-    arr
-}
+
 
 
 

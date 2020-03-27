@@ -320,6 +320,7 @@ impl ChessLogic {
         println!("------------------------");
     }
 
+
     /// Default constructor for chesslogic
     /// 
     /// Initializes the game with initial positions 
@@ -327,7 +328,7 @@ impl ChessLogic {
         ChessLogic{
             chess_board1: ChessBoard::new(), 
             chess_board2: ChessBoard::new(), 
-            pawn_in_last_turn_b1: None, 
+            pawn_in_last_turn_b1: None,
             pawn_in_last_turn_b2: None,
             upgrade_to1: Piece::E,
             upgrade_to2: Piece::E,
@@ -343,6 +344,49 @@ impl ChessLogic {
             board2_black_capture: [0;5],
             winner: Winner::N,
         }
+    }
+
+    /// Constructor to read from fen/resume a game
+    /// 
+    /// Resumes a game with given values, checks for nothing
+    pub fn resume(
+        _chess_board1: ChessBoard, 
+        _chess_board2: ChessBoard, 
+        _pawn_in_last_turn_b1: Option<(usize,usize)>, 
+        _pawn_in_last_turn_b2: Option<(usize,usize)>,
+        _upgrade_to1: Piece,
+        _upgrade_to2: Piece,
+        _white_active_1: bool,
+        _white_active_2: bool,
+        _half_moves_last_capture1: usize,
+        _half_moves_last_capture2: usize,
+        _movectr1: usize,
+        _movectr2: usize,
+        _board1_white_capture: [u8;5],
+        _board1_black_capture: [u8;5],
+        _board2_white_capture: [u8;5],
+        _board2_black_capture: [u8;5],
+        _winner: Winner
+        ) -> ChessLogic {
+            ChessLogic{
+                chess_board1: _chess_board1, 
+                chess_board2: _chess_board2, 
+                pawn_in_last_turn_b1: _pawn_in_last_turn_b1,
+                pawn_in_last_turn_b2: _pawn_in_last_turn_b2,
+                upgrade_to1: _upgrade_to1,
+                upgrade_to2: _upgrade_to2,
+                white_active_1: _white_active_1,
+                white_active_2: _white_active_2,
+                half_moves_last_capture1: _half_moves_last_capture1,
+                half_moves_last_capture2: _half_moves_last_capture2,
+                movectr1: _movectr1,
+                movectr2: _movectr2,
+                board1_white_capture: _board1_white_capture ,
+                board1_black_capture: _board1_black_capture,
+                board2_white_capture: _board2_white_capture,
+                board2_black_capture: _board2_black_capture,
+                winner: _winner,
+            }
     }
 
     ///Returns a vector of legal moves for the board, and for the location
