@@ -15,6 +15,8 @@ pub mod infoCourier {
     use crate::logic::Winner;
     use std;
 
+    ///# Arguments
+    /// * `cl` - A pointer to a ChessLogic 
     ///Generates the FEN String from a given Bughouse game: a given Chesslogic module
     pub fn gen_fen(cl:& ChessLogic) -> (String,String) {
         //pieces
@@ -149,8 +151,19 @@ pub mod infoCourier {
         (s1,s2)
     }
 
-    //exmple fen:
-    //"rnbqkbnr/pppppppp/8/8/4P3/8/PPPPPPPP/RNBQKBNR b KQkq e3 0 1".to_string();
+    /// Read from 2 FENs and 4 Deployable Piece Pools
+    ///# Arguments
+    /// * `s1` - FEN String board1
+    /// * `s2` - FEN String board2
+    /// * `p1` - list of pieces for board1,white 
+    /// * `p2` - list of pieces for board1,black 
+    /// * `p3` - list of pieces for board2,white 
+    /// * `p4` - list of pieces for board2,black   
+    ///
+    /// Example fen: "rnbqkbnr/pppppppp/8/8/4P3/8/PPPPPPPP/RNBQKBNR b KQkq e3 0 1".to_string();
+    /// A pool string has to be String consisting of P,R,Q,N,B,p,r,q,n,b -> capital case for white, lower case for black
+    /// The ordering is not important but it must be consistent (only white or only black)
+    /// In normal fen --kq becomes -kq or ---- -> -, to make parsing easier this string is not trimmed
     pub fn read_fen(s1:& String,s2:& String,
         p1:&String,p2:&String,p3:&String,p4:&String ) -> Option<ChessLogic> {
        
@@ -423,8 +436,10 @@ pub mod infoCourier {
             Winner::N)
         )
     }
-
-    //order is -> //P-R-N-B-Q
+    
+    ///Reads a pool string, returns none if input is not legal
+    ///# Arguments
+    /// * `st` - A String for deployable piece pool
     fn parse_pool(st: &String) -> Option<[u8;5]> {
         let mut ar = [0;5];
         let mut upperfound = false;
@@ -450,6 +465,9 @@ pub mod infoCourier {
         return Some(ar)
     }
 
+    ///Parse a legal int string to an integer, returns None if input is legal
+    /// # Arguments
+    /// * `st` - A string that is a valid decimal number
     fn parse_int_str(st: &String) -> Option<usize> {
         let mut amn = st.chars().count() as u32;
         let mut intega: u32 = 1;
@@ -464,6 +482,11 @@ pub mod infoCourier {
         return Some(intega as usize);
     }
 
+     ///Parse a FEN substring for piece locations, false if input is not legal
+    /// # Arguments
+    /// * `s1` - A string that is a valid FEN Substring for pieces
+    /// * `ch` - A pointer to a board, for saving the piece locations
+    /// * `line` - index for the current line
     fn read_line(s1: & String,ch: &mut ChessBoard,line:usize) -> bool{
         for c in s1.chars() {
             let mut ct = 0;
