@@ -482,7 +482,7 @@ pub mod infoCourier {
         return Some(intega as usize);
     }
 
-     ///Parse a FEN substring for piece locations, false if input is not legal
+    ///Parse a FEN substring for piece locations, false if input is not legal
     /// # Arguments
     /// * `s1` - A string that is a valid FEN Substring for pieces
     /// * `ch` - A pointer to a board, for saving the piece locations
@@ -518,5 +518,54 @@ pub mod infoCourier {
             
         }
         return true
+    }
+
+    ///Generates string output of a pool
+    ///# Arguments
+    /// ´p´ - A deployable piece pool
+    /// ´white´ - wether the pieces are white
+    fn gen_pool(p:&[u8;5],white:bool) -> String {
+        let mut st = "".to_string();
+        for i in 0..p[0] {
+           if white {
+            st.push('P');
+           } else{
+               st.push('p');
+           }
+           
+        }
+        for i in 0..p[1] {
+            if white {
+                st.push('R');
+               } else{
+                   st.push('r');
+               }
+            
+        }
+        for i in 0..p[2] {
+            if white {
+                st.push('N');
+               } else{
+                   st.push('n');
+               }
+            
+        }
+        for i in 0..p[3] {
+            if white {
+                st.push('B');
+               } else{
+                   st.push('b');
+               }
+            
+        }
+        for i in 0..p[4] {
+            if white {
+                st.push('Q');
+               } else{
+                   st.push('Q');
+               }
+            
+        }
+        st
     }
 }

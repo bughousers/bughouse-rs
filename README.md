@@ -43,7 +43,7 @@ pub fn resign(&mut self,board1:bool,white:bool)
 ```
 ## Helpers
 
-## Parse
+### Parse
 A string of form *char*,*int*-*char*,*int* (e.g. *"e2-e4"*) can be converted to array indices via the parse function.
 
 ```rust
@@ -52,6 +52,24 @@ pub fn parse(input: &String) -> Option<[usize; 4]>
 ### Enum Piece
 The Enum class of Piece has all the needed pieces, white and black pieces differ themselves: *P,Q,R,N,B,K,E,L,p,q,r,n,b* and their upgraded variants starting with *U*. The *U_* types are needed since when an upgraded piece is captured, your teammate receives a pawn.
 
+### FEN
+
+To Generate FEN Strings for both games, call gen_fen
+
+```rust
+ pub fn gen_fen(cl:& ChessLogic) -> (String,String)
+```
+
+To Generate a bughouse game from 2 FEN Inputs and 4 Lists of piece pools (order is: board1-white,board1-black,board2-white,board2-black; board_ for the board index and white|black for the colour of the pieces), call read_fen. Returns None if input is not legal
+
+```rust
+pub fn read_fen(s1:& String,s2:& String, p1:&String,p2:&String,p3:&String,p4:&String ) -> Option<ChessLogic>
+```
+
+To generate a pool, call gen_pool with a pointer to a pool
+```rust
+fn gen_pool(p:&[u8;5],white:bool) -> String
+```
 
 ## To-do
 - [ ] Save calculation time by checking for a stalemate only after a request
