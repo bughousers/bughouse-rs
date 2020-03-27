@@ -50,7 +50,7 @@ A string of form char,int-char,int (e.g. "e2-e4") can be converted to array indi
 pub fn parse(input: &String) -> Option<[usize; 4]>
 ```
 ### Enum Piece
-The Enum class of Piece has all the needed pieces, white and black pieces differ themselves: P,Q,R,N,B,K,E,L,p,q,r,n,b and their upgraded variants starting with U. The U_ types are needed since when an upgraded piece is captured your teammate can deploy it only as a pawn.
+The Enum class of Piece has all the needed pieces, white and black pieces differ themselves: P,Q,R,N,B,K,E,L,p,q,r,n,b and their upgraded variants starting with U. The U_ types are needed since when an upgraded piece is captured, your teammate receives a pawn.
 
 
 ## To-do
