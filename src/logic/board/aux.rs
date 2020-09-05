@@ -92,3 +92,19 @@ pub fn contains(vec: &Vec<(usize,usize)>,(i,j): (usize,usize)) -> bool {
     return false
 }
 
+///Get the index of the piece on the captured pieces array
+/// # Arguments 
+/// * `piece` - the index of the given piece
+/// 
+/// The upgraded pieces will be sent over as pawns,
+pub fn box_index(piece : &Piece) -> Option<usize> {
+    //P-R-N-B-Q
+    match piece.piece_type {
+        PieceType::Pawn => Some(0),
+        PieceType::Rook => Some(1),
+        PieceType::Knight => Some(2),
+        PieceType::Bishop => Some(3),
+        PieceType::Queen => Some(4),
+        _ => None
+    }
+}
